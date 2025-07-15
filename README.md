@@ -23,7 +23,7 @@
 **OutlastTrials AudioEditor** is a powerful, user-friendly tool designed specifically for modding audio files and subtitles in Outlast Trials. Built with Python and PyQt5, it provides a comprehensive solution for content creators, modders, and localization teams.
 
 <div align="center">
-  <img src="https://i.imgur.com/8RmFUpx.png" alt="Screenshot" width="800">
+  <img src="https://i.imgur.com/qo6DNnA.png" alt="Screenshot" width="800">
 </div>
 
 ## ✨ Features
@@ -51,7 +51,7 @@
 ## 🚀 Installation
 
 ### Option 1: Portable Version (Recommended)
-1. Download the latest release from [Releases](https://github.com/Bezna/OutlastTrials_AudioEditer/releases)
+1. Download the latest release from [Releases](https://github.com/Bezna/OutlastTrials_AudioEditor/releases)
 2. Extract the ZIP file to any location
 3. Run `OutlastTrials_AudioEditor.exe`
 
@@ -170,7 +170,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ```
 MIT License
 
-Copyright (c) 2024 OutlastTrials AudioEditor
+Copyright (c) 2025 OutlastTrials AudioEditor
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

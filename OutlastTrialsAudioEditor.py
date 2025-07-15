@@ -21,7 +21,7 @@ else:
     CREATE_NO_WINDOW = 0
 TRANSLATIONS = {
     "en": {
-        "app_title": "OutlastTrials AudioEditer",
+        "app_title": "OutlastTrials AudioEditor",
         "file_menu": "File",
         "edit_menu": "Edit",
         "tools_menu": "Tools",
@@ -64,7 +64,7 @@ TRANSLATIONS = {
         "merge_all": "Merge All (Keep Existing)"
     },
     "ru": {
-        "app_title": "OutlastTrials AudioEditer",
+        "app_title": "OutlastTrials AudioEditor",
         "file_menu": "Файл",
         "edit_menu": "Правка",
         "tools_menu": "Инструменты",
@@ -1390,7 +1390,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         getting_started.setHtml("""
         <h2>Getting Started</h2>
         <h3>1. Initial Setup</h3>
-        <p>Before using OutlastTrials AudioEditer, ensure you have:</p>
+        <p>Before using OutlastTrials AudioEditor, ensure you have:</p>
         <ul>
             <li><b>SoundbanksInfo.json</b> - Contains metadata for all audio files</li>
             <li><b>Wems folder</b> - Contains WEM audio files organized by language</li>
@@ -1724,10 +1724,10 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         """Check for updates"""
         QtWidgets.QMessageBox.information(
             self, "Check for Updates", 
-            "You are running OutlastTrials AudioEditer v1.0 \n\n"
+            "You are running OutlastTrials AudioEditor v1.0 \n\n"
             "This is the latest version.\n\n"
             "Check GitHub for updates:\n"
-            "https://github.com/Bezna/OutlastTrials_AudioEditer"
+            "https://github.com/Bezna/OutlastTrials_AudioEditor"
         )
 
     def report_bug(self):
@@ -1795,7 +1795,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         
         def open_github():
             import webbrowser
-            webbrowser.open("https://github.com/Bezna/OutlastTrials_AudioEditer/issues")
+            webbrowser.open("https://github.com/Bezna/OutlastTrials_AudioEditor/issues")
         
         copy_btn.clicked.connect(copy_report)
         send_btn.clicked.connect(open_github)
@@ -3389,7 +3389,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         """)
         header_layout = QtWidgets.QVBoxLayout(header_widget)
         
-        title_label = QtWidgets.QLabel("OutlastTrials AudioEditer")
+        title_label = QtWidgets.QLabel("OutlastTrials AudioEditor")
         title_label.setStyleSheet("""
             QLabel {
                 color: white;
@@ -3480,7 +3480,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         license_content.setHtml("""
         <div style="padding: 20px;">
         <h3>License Agreement</h3>
-        <p>Copyright (c) 2024 WEM Subtitle Studio</p>
+        <p>Copyright (c) 2025 WEM Subtitle Studio</p>
         
         <p>Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal
@@ -3513,7 +3513,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         discord_btn = QtWidgets.QPushButton("Discord")
         donate_btn = QtWidgets.QPushButton("Donate")
         
-        github_btn.clicked.connect(lambda: QtWidgets.QMessageBox.information(self, "GitHub", "https://github.com/Bezna/OutlastTrials_AudioEditer"))
+        github_btn.clicked.connect(lambda: QtWidgets.QMessageBox.information(self, "GitHub", "https://github.com/Bezna/OutlastTrials_AudioEditor"))
         discord_btn.clicked.connect(lambda: QtWidgets.QMessageBox.information(self, "Discord", "My Discord: Bezna"))
         donate_btn.clicked.connect(lambda: QtWidgets.QMessageBox.information(self, "Donate", "No donation link available yet"))
         

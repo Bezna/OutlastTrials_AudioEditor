@@ -1,0 +1,2 @@
+# Core GUI Framework
+PyQt5==5.15.9
