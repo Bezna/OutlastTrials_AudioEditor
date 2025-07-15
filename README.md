@@ -186,13 +186,17 @@ in the Software without restriction...
 - **PyQt5** - GUI framework
 - **WWise** - Wem Files
 
+## 💰 Donation
+
+No
+
 ## 📊 Stats
 
 <div align="center">
   
-  ![Downloads](https://img.shields.io/github/downloads/yourusername/OutlastTrials_AudioEditor/total?style=for-the-badge)
-  ![Stars](https://img.shields.io/github/stars/yourusername/OutlastTrials_AudioEditor?style=for-the-badge)
-  ![Issues](https://img.shields.io/github/issues/yourusername/OutlastTrials_AudioEditor?style=for-the-badge)
+  ![Downloads](https://img.shields.io/github/downloads/Bezna/OutlastTrials_AudioEditor/total?style=for-the-badge)
+  ![Stars](https://img.shields.io/github/stars/Bezna/OutlastTrials_AudioEditor?style=for-the-badge)
+  ![Issues](https://img.shields.io/github/issues/Bezna/OutlastTrials_AudioEditor?style=for-the-badge)
   
 </div>
 
