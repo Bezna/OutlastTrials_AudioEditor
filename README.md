@@ -23,7 +23,7 @@
 **OutlastTrials AudioEditor** is a powerful, user-friendly tool designed specifically for modding audio files and subtitles in Outlast Trials. Built with Python and PyQt5, it provides a comprehensive solution for content creators, modders, and localization teams.
 
 <div align="center">
-  <img src="https://imgur.com/8RmFUpx" alt="Screenshot" width="800">
+  <img src="https://i.imgur.com/8RmFUpx.png" alt="Screenshot" width="800">
 </div>
 
 ## ✨ Features
