@@ -1,9 +1,9 @@
 {
-  "ui_language": "en",
+  "ui_language": "ru",
   "theme": "light",
   "subtitle_lang": "en",
-  "last_directory": "",
-  "window_geometry": "01d9d0cb0003000000000103000000550000067c000003a100000104000000740000067b000003a00000000000000000078000000104000000740000067b000003a0",
+  "last_directory": "D:/Files/ue4/wwiseProject/qwerdsfqg",
+  "window_geometry": "01d9d0cb00030000000000dd0000006f00000656000003b3000000de0000008e00000655000003b200000000000000000780000000de0000008e00000655000003b2",
   "auto_save": true,
   "show_tooltips": true,
   "debug_mode": false,

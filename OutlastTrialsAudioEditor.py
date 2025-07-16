@@ -61,7 +61,21 @@ TRANSLATIONS = {
         "conflict_message": "The following keys already have subtitles:\n\n{conflicts}\n\nWhich subtitles would you like to keep?",
         "use_existing": "Keep Existing",
         "use_new": "Use New",
-        "merge_all": "Merge All (Keep Existing)"
+        "merge_all": "Merge All (Keep Existing)",
+        "converter_instructions": """WEM Converter with SFX Support:
+1. Select the root WWISE folder containing .cache/Windows/SFX subfolders
+2. Files will be automatically categorized and renamed to their ID:
+   • Voice files (English) → MOD_P/OPP/Content/WwiseAudio/Windows/English(US)/
+   • SFX files → MOD_P/OPP/Content/WwiseAudio/Windows/
+3. Unknown files will be categorized by name patterns
+4. Supports both dialogue and sound effects
+
+Subtitle Exporter:
+1. Modified subtitles will be exported with proper folder structure:
+   MOD_P/OPP/Content/Localization/[Category]/[Language]/
+2. Supports multiple categories (OPP_Subtitles, OPP_Subtitles_Breach, etc.)
+3. Each language has its own folder (en, ru-RU, fr-FR, de-DE, etc.)
+4. Use 'Export Subtitles for Game' to create the mod structure"""
     },
     "ru": {
         "app_title": "OutlastTrials AudioEditor",
@@ -104,7 +118,21 @@ TRANSLATIONS = {
         "conflict_message": "Следующие ключи уже имеют субтитры:\n\n{conflicts}\n\nКакие субтитры использовать?",
         "use_existing": "Оставить существующие",
         "use_new": "Использовать новые",
-        "merge_all": "Объединить все (оставить существующие)"
+        "merge_all": "Объединить все (оставить существующие)",
+        "converter_instructions": """Конвертер WEM с поддержкой SFX:
+1. Выберите корневую папку WWISE с подпапками .cache/Windows/SFX
+2. Файлы будут автоматически категоризированы и переименованы по ID:
+   • Голосовые файлы (английские) → MOD_P/OPP/Content/WwiseAudio/Windows/English(US)/
+   • SFX файлы → MOD_P/OPP/Content/WwiseAudio/Windows/
+3. Неизвестные файлы будут категоризированы по шаблонам имён
+4. Поддерживает как диалоги, так и звуковые эффекты
+
+Экспортер субтитров:
+1. Изменённые субтитры будут экспортированы с правильной структурой папок:
+   MOD_P/OPP/Content/Localization/[Категория]/[Язык]/
+2. Поддерживает несколько категорий (OPP_Subtitles, OPP_Subtitles_Breach и др.)
+3. Для каждого языка отдельная папка (en, ru-RU, fr-FR, de-DE и др.)
+4. Используйте 'Экспорт субтитров для игры' для создания структуры мода"""
     }
 }
 
@@ -256,6 +284,152 @@ class ProgressDialog(QtWidgets.QDialog):
             
     def append_details(self, text):
         self.details.append(text)
+class SubtitleLoaderThread(QtCore.QThread):
+    """Thread for loading subtitle data without blocking UI"""
+    dataLoaded = QtCore.pyqtSignal(dict)  # subtitles_to_show
+    statusUpdate = QtCore.pyqtSignal(str)  # status message
+    progressUpdate = QtCore.pyqtSignal(int)  # progress percentage
+    
+    def __init__(self, parent, all_subtitle_files, locres_manager, subtitles, original_subtitles, 
+                 selected_lang, selected_category, orphaned_only, modified_only, with_audio_only, 
+                 search_text, audio_keys_cache, modified_subtitles):
+        super().__init__(parent)
+        self.all_subtitle_files = all_subtitle_files
+        self.locres_manager = locres_manager
+        self.subtitles = subtitles
+        self.original_subtitles = original_subtitles
+        self.selected_lang = selected_lang
+        self.selected_category = selected_category
+        self.orphaned_only = orphaned_only
+        self.modified_only = modified_only
+        self.with_audio_only = with_audio_only
+        self.search_text = search_text.lower().strip()
+        self.audio_keys_cache = audio_keys_cache
+        self.modified_subtitles = modified_subtitles
+        self._should_stop = False
+        
+    def stop(self):
+        self._should_stop = True
+        
+    def run(self):
+        try:
+            subtitles_to_show = {}
+            files_processed = 0
+            
+            # Filter relevant files first
+            relevant_files = []
+            for key, file_info in self.all_subtitle_files.items():
+                if file_info['language'] == self.selected_lang:
+                    if (self.selected_category == "All Categories" or 
+                        file_info['category'] == self.selected_category):
+                        relevant_files.append((key, file_info))
+            
+            total_files = len(relevant_files)
+            
+            if total_files == 0:
+                self.dataLoaded.emit({})
+                return
+            
+            # Process files
+            for i, (key, file_info) in enumerate(relevant_files):
+                if self._should_stop:
+                    return
+                    
+                progress = int((i / total_files) * 70)  # 70% for file processing
+                self.progressUpdate.emit(progress)
+                self.statusUpdate.emit(f"Processing {file_info['filename']}...")
+                
+                try:
+                    file_subtitles = self.locres_manager.export_locres(file_info['path'])
+                    files_processed += 1
+                    
+                    for sub_key, sub_value in file_subtitles.items():
+                        if self._should_stop:
+                            return
+                            
+                        # Apply audio filters
+                        has_audio = sub_key in self.audio_keys_cache if self.audio_keys_cache else False
+                        
+                        if self.orphaned_only and has_audio:
+                            continue
+                        
+                        if self.with_audio_only and not has_audio:
+                            continue
+                        
+                        # Apply modified filter
+                        current_text = self.subtitles.get(sub_key, sub_value)
+                        is_modified = sub_key in self.modified_subtitles
+                        
+                        if self.modified_only and not is_modified:
+                            continue
+                        
+                        # Apply search filter
+                        if self.search_text:
+                            if (self.search_text not in sub_key.lower() and 
+                                self.search_text not in sub_value.lower() and
+                                self.search_text not in current_text.lower()):
+                                continue
+                        
+                        subtitles_to_show[sub_key] = {
+                            'original': sub_value,
+                            'current': current_text,
+                            'file_info': file_info,
+                            'has_audio': has_audio,
+                            'is_modified': is_modified
+                        }
+                        
+                except Exception as e:
+                    DEBUG.log(f"Error loading subtitles from {file_info['path']}: {e}", "ERROR")
+            
+            # Process manually added subtitles
+            self.progressUpdate.emit(80)
+            self.statusUpdate.emit("Processing additional subtitles...")
+            
+            for sub_key, sub_value in self.subtitles.items():
+                if self._should_stop:
+                    return
+                    
+                if sub_key not in subtitles_to_show:
+                    # Apply audio filters
+                    has_audio = sub_key in self.audio_keys_cache if self.audio_keys_cache else False
+                    
+                    if self.orphaned_only and has_audio:
+                        continue
+                    
+                    if self.with_audio_only and not has_audio:
+                        continue
+                    
+                    # Apply modified filter
+                    is_modified = sub_key in self.modified_subtitles
+                    
+                    if self.modified_only and not is_modified:
+                        continue
+                    
+                    # Apply search filter
+                    if self.search_text:
+                        original_text = self.original_subtitles.get(sub_key, "")
+                        if (self.search_text not in sub_key.lower() and 
+                            self.search_text not in sub_value.lower() and
+                            self.search_text not in original_text.lower()):
+                            continue
+                    
+                    subtitles_to_show[sub_key] = {
+                        'original': self.original_subtitles.get(sub_key, ""),
+                        'current': sub_value,
+                        'file_info': None,
+                        'has_audio': has_audio,
+                        'is_modified': is_modified
+                    }
+            
+            self.progressUpdate.emit(100)
+            self.statusUpdate.emit(f"Loaded {len(subtitles_to_show)} subtitles from {files_processed} files")
+            
+            if not self._should_stop:
+                self.dataLoaded.emit(subtitles_to_show)
+                
+        except Exception as e:
+            DEBUG.log(f"Error in subtitle loader thread: {e}", "ERROR")
+            self.dataLoaded.emit({})
 
 class UnrealLocresManager:
     """Manager for UnrealLocres.exe operations with debug logging"""
@@ -723,7 +897,7 @@ class SubtitleEditor(QtWidgets.QDialog):
 class WemSubtitleApp(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        DEBUG.log("=== WEM Subtitle Studio Starting ===")
+        DEBUG.log("=== OutlastTrials AudioEditor Starting ===")
         
         self.settings = AppSettings()
         self.translations = TRANSLATIONS
@@ -768,6 +942,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         self.locres_manager = UnrealLocresManager(self.unreal_locres_path)
         self.subtitles = {}
         self.original_subtitles = {}
+        self.all_subtitle_files = {}
         self.all_files = self.load_all_soundbank_files(self.soundbanks_path)
         self.entries_by_lang = self.group_by_language()
 
@@ -785,6 +960,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         self.debug_window = None
         
         self.create_ui()
+        self.load_subtitles()
         self.apply_settings()
         self.restore_window_state()
 
@@ -795,7 +971,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         if self.settings.data.get("auto_save", True):
             self.auto_save_timer.start(300000)  # 5 minutes
             
-        DEBUG.log("=== WEM Subtitle Studio Started Successfully ===")
+        DEBUG.log("=== OutlastTrials AudioEditor Started Successfully ===")
     def delete_mod_audio(self, entry, lang):
         """Delete modified audio file"""
         id_ = entry.get("Id", "")
@@ -854,71 +1030,170 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             msg += "\n\nPlease ensure all files are in the correct location."
             QtWidgets.QMessageBox.warning(None, "Missing Files", msg)
     def load_subtitles(self):
-        """Load subtitles from locres file using UnrealLocres"""
-        DEBUG.log("=== Loading Subtitles ===")
+        """Load subtitles from new Localization structure"""
+        DEBUG.log("=== Loading Subtitles (New Structure) ===")
         self.subtitles = {}
         self.original_subtitles = {}
+        self.all_subtitle_files = {}  # Хранит все найденные файлы субтитров
         
+        # Scan localization folder for subtitle files
+        self.scan_localization_folder()
+        
+        # Load subtitles for current language
         subtitle_lang = self.settings.data["subtitle_lang"]
-        DEBUG.log(f"Subtitle language: {subtitle_lang}")
-
-        working_locres_path = os.path.join(".", "Localization", subtitle_lang, "OPP_Subtitles_working.locres")
-        working_locres_path = os.path.abspath(working_locres_path)
+        self.load_subtitles_for_language(subtitle_lang)
         
-        original_locres_path = os.path.join(".", "Localization", subtitle_lang, "OPP_Subtitles.locres")
-        original_locres_path = os.path.abspath(original_locres_path)
-
-        if os.path.exists(original_locres_path):
-            DEBUG.log(f"Loading original subtitles from: {original_locres_path}")
-            self.original_subtitles = self.locres_manager.export_locres(original_locres_path)
-            DEBUG.log(f"Loaded {len(self.original_subtitles)} original subtitles")
-
-        if os.path.exists(working_locres_path):
-            DEBUG.log(f"Loading working copy from: {working_locres_path}")
-            self.subtitles = self.locres_manager.export_locres(working_locres_path)
-            DEBUG.log(f"Loaded {len(self.subtitles)} subtitles from working copy")
-        elif os.path.exists(original_locres_path):
-            DEBUG.log("Working copy not found, creating from original")
-            try:
-                shutil.copy2(original_locres_path, working_locres_path)
-                self.subtitles = self.locres_manager.export_locres(working_locres_path)
-                DEBUG.log(f"Created working copy and loaded {len(self.subtitles)} subtitles")
-            except Exception as e:
-                DEBUG.log(f"Error creating working copy: {e}", "ERROR")
-                self.subtitles = self.original_subtitles.copy()
-        else:
-            DEBUG.log("No locres files found", "WARNING")
-
-            json_path = os.path.join(".", "Localization", subtitle_lang, "OPP_Subtitles.json")
-            json_path = os.path.abspath(json_path)
-            DEBUG.log(f"Trying JSON fallback at: {json_path}")
-            
-            if os.path.exists(json_path):
-                try:
-                    with open(json_path, "r", encoding="utf-8") as f:
-                        data = json.load(f)
-                    self.subtitles = data.get("Subtitles", {})
-                    self.original_subtitles = self.subtitles.copy()
-                    DEBUG.log(f"Loaded {len(self.subtitles)} subtitles from JSON")
-                except Exception as e:
-                    DEBUG.log(f"Error loading JSON subtitles: {e}", "ERROR")
-
+        # Determine modified subtitles
         self.modified_subtitles.clear()
         for key, value in self.subtitles.items():
             if key in self.original_subtitles and self.original_subtitles[key] != value:
                 self.modified_subtitles.add(key)
         
         DEBUG.log(f"Found {len(self.modified_subtitles)} modified subtitles")
-
-        current_lang = self.get_current_language()
-        if current_lang and current_lang in self.populated_tabs:
-            DEBUG.log(f"Refreshing tab: {current_lang}")
-            self.populate_tree(current_lang)
-            
         DEBUG.log("=== Subtitle Loading Complete ===")
 
-    def create_ui(self):
+    def scan_localization_folder(self):
+        """Scan Localization folder for all subtitle files"""
+        localization_path = os.path.join(self.base_path, "Localization")
+        DEBUG.log(f"Scanning localization folder: {localization_path}")
+        
+        self.all_subtitle_files = {}
+        
+        if not os.path.exists(localization_path):
+            DEBUG.log("Localization folder not found, creating structure", "WARNING")
+            # Create default structure
+            os.makedirs(localization_path, exist_ok=True)
+            
+            # Create default OPP_Subtitles structure
+            default_langs = ["en", "ru-RU", "fr-FR", "de-DE", "es-ES"]
+            for lang in default_langs:
+                lang_path = os.path.join(localization_path, "OPP_Subtitles", lang)
+                os.makedirs(lang_path, exist_ok=True)
+                
+                # Create empty locres file if it doesn't exist
+                locres_path = os.path.join(lang_path, "OPP_Subtitles.locres")
+                if not os.path.exists(locres_path):
+                    # Create minimal locres file
+                    empty_subtitles = {}
+                    self.create_empty_locres_file(locres_path, empty_subtitles)
+            
+            # Rescan after creating structure
+            return self.scan_localization_folder()
+        
+        # Scan for subtitle folders
+        try:
+            for item in os.listdir(localization_path):
+                item_path = os.path.join(localization_path, item)
+                
+                if not os.path.isdir(item_path):
+                    continue
+                    
+                DEBUG.log(f"Found subtitle category: {item}")
+                
+                # Scan for language folders within category
+                try:
+                    for lang_item in os.listdir(item_path):
+                        lang_path = os.path.join(item_path, lang_item)
+                        
+                        if not os.path.isdir(lang_path):
+                            continue
+                            
+                        DEBUG.log(f"Found language folder: {lang_item} in {item}")
+                        
+                        # Look for .locres files in language folder
+                        try:
+                            for file_item in os.listdir(lang_path):
+                                if file_item.endswith('.locres'):
+                                    file_path = os.path.join(lang_path, file_item)
+                                    
+                                    key = f"{item}/{lang_item}/{file_item}"
+                                    self.all_subtitle_files[key] = {
+                                        'path': file_path,
+                                        'category': item,
+                                        'language': lang_item,
+                                        'filename': file_item,
+                                        'relative_path': f"Localization/{item}/{lang_item}/{file_item}"
+                                    }
+                                    
+                                    DEBUG.log(f"Found subtitle file: {key}")
+                                    
+                        except PermissionError:
+                            DEBUG.log(f"Permission denied accessing {lang_path}", "WARNING")
+                            continue
+                            
+                except PermissionError:
+                    DEBUG.log(f"Permission denied accessing {item_path}", "WARNING")
+                    continue
+                    
+        except Exception as e:
+            DEBUG.log(f"Error scanning localization folder: {e}", "ERROR")
+        
+        DEBUG.log(f"Total subtitle files found: {len(self.all_subtitle_files)}")
 
+    def create_empty_locres_file(self, path, subtitles):
+        """Create an empty locres file"""
+        try:
+            # Create directory if it doesn't exist
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            
+            # Create a temporary CSV file
+            csv_path = path.replace('.locres', '.csv')
+            
+            with open(csv_path, 'w', encoding='utf-8', newline='') as f:
+                writer = csv.writer(f)
+                # Write header or empty content
+                for key, value in subtitles.items():
+                    writer.writerow([f"Subtitles/{key}", value])
+            
+            # Convert CSV to locres using UnrealLocres
+            if os.path.exists(self.unreal_locres_path):
+                result = subprocess.run(
+                    [self.unreal_locres_path, "import", path, csv_path],
+                    capture_output=True,
+                    text=True,
+                    cwd=os.path.dirname(self.unreal_locres_path) or ".",
+                    startupinfo=startupinfo,
+                    creationflags=CREATE_NO_WINDOW
+                )
+                
+                if result.returncode != 0:
+                    DEBUG.log(f"Failed to create locres file: {result.stderr}", "WARNING")
+            
+            # Clean up CSV
+            if os.path.exists(csv_path):
+                os.remove(csv_path)
+                
+        except Exception as e:
+            DEBUG.log(f"Error creating empty locres file: {e}", "ERROR")
+
+    def load_subtitles_for_language(self, language):
+        """Load subtitles for specific language"""
+        DEBUG.log(f"Loading subtitles for language: {language}")
+        
+        self.subtitles = {}
+        self.original_subtitles = {}
+        
+        # Find all subtitle files for this language
+        for key, file_info in self.all_subtitle_files.items():
+            if file_info['language'] == language:
+                DEBUG.log(f"Loading file: {file_info['path']}")
+                
+                # Load original
+                original_subtitles = self.locres_manager.export_locres(file_info['path'])
+                
+                # Check for working copy
+                working_path = file_info['path'].replace('.locres', '_working.locres')
+                if os.path.exists(working_path):
+                    DEBUG.log(f"Found working copy: {working_path}")
+                    working_subtitles = self.locres_manager.export_locres(working_path)
+                    self.subtitles.update(working_subtitles)
+                else:
+                    self.subtitles.update(original_subtitles)
+                    
+                self.original_subtitles.update(original_subtitles)
+                
+                DEBUG.log(f"Loaded {len(original_subtitles)} subtitles from {file_info['filename']}")
+    def create_ui(self):
         central = QtWidgets.QWidget()
         self.setCentralWidget(central)
         main_layout = QtWidgets.QVBoxLayout(central)
@@ -959,7 +1234,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             self.create_language_tab(lang)
 
         self.create_converter_tab()
-
+        self.create_subtitle_editor_tab()
         self.tabs.currentChanged.connect(self.on_tab_changed)
         
         content_layout.addWidget(self.tabs)
@@ -969,6 +1244,757 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             first_lang = sorted(self.entries_by_lang.keys())[0]
             self.populate_tree(first_lang)
             self.populated_tabs.add(first_lang)
+        def delayed_init():
+            if hasattr(self, 'subtitle_lang_combo'):
+                self.populate_subtitle_editor_controls()
+
+        QtCore.QTimer.singleShot(500, delayed_init)
+
+    # Add subtitle editor tab
+    def refresh_subtitle_editor(self):
+            """Refresh subtitle editor data"""
+            DEBUG.log("Refreshing subtitle editor")
+            
+          
+            self.scan_localization_folder()
+            
+           
+            self.populate_subtitle_editor_controls()
+            
+            
+            self.status_bar.showMessage("Subtitle editor refreshed", 2000)
+    def on_global_search_changed_for_subtitles(self, text):
+        """Handle global search changes when on subtitle editor tab"""
+        # Only respond if subtitle editor tab is active
+        if self.tabs.currentWidget() == self.tabs.widget(self.tabs.count() - 1):  # Subtitle editor is last tab
+            self.on_subtitle_filter_changed()
+
+    def get_global_search_text(self):
+        """Get text from global search bar"""
+        return self.global_search.text() if hasattr(self, 'global_search') else ""
+
+    def create_subtitle_editor_tab(self):
+        """Create tab for editing subtitles without audio files"""
+        tab = QtWidgets.QWidget()
+        layout = QtWidgets.QVBoxLayout(tab)
+        
+        # Header with info
+        header = QtWidgets.QLabel("""
+        <h3>Subtitle Editor</h3>
+        <p>Edit subtitles directly. Use the global search bar above to filter results.</p>
+        """)
+        layout.addWidget(header)
+        
+        # Status and progress area
+        status_widget = QtWidgets.QWidget()
+        status_layout = QtWidgets.QHBoxLayout(status_widget)
+        
+        self.subtitle_status_label = QtWidgets.QLabel("Ready")
+        self.subtitle_status_label.setStyleSheet("color: #666; font-style: italic;")
+        
+        # Progress bar (hidden by default)
+        self.subtitle_progress = QtWidgets.QProgressBar()
+        self.subtitle_progress.setVisible(False)
+        self.subtitle_progress.setMaximumHeight(20)
+        
+        # Cancel button (hidden by default)
+        self.subtitle_cancel_btn = QtWidgets.QPushButton("Cancel")
+        self.subtitle_cancel_btn.setVisible(False)
+        self.subtitle_cancel_btn.setMaximumWidth(80)
+        self.subtitle_cancel_btn.clicked.connect(self.cancel_subtitle_loading)
+        
+        status_layout.addWidget(self.subtitle_status_label)
+        status_layout.addStretch()
+        status_layout.addWidget(self.subtitle_progress)
+        status_layout.addWidget(self.subtitle_cancel_btn)
+        
+        layout.addWidget(status_widget)
+        
+        # Controls panel: Language, Category, and Filters
+        controls = QtWidgets.QWidget()
+        controls_layout = QtWidgets.QHBoxLayout(controls)
+        
+        # Language selector
+        lang_label = QtWidgets.QLabel("Language:")
+        self.subtitle_lang_combo = QtWidgets.QComboBox()
+        self.subtitle_lang_combo.setMinimumWidth(120)
+        
+        # Category selector
+        category_label = QtWidgets.QLabel("Category:")
+        self.subtitle_category_combo = QtWidgets.QComboBox()
+        self.subtitle_category_combo.setMinimumWidth(150)
+        
+        # Filter checkboxes
+        self.orphaned_only_checkbox = QtWidgets.QCheckBox("Without audio")
+        self.orphaned_only_checkbox.setToolTip("Show only subtitles that don't have corresponding audio files")
+        
+        self.modified_only_checkbox = QtWidgets.QCheckBox("Modified only")
+        self.modified_only_checkbox.setToolTip("Show only subtitles that have been modified")
+        
+        self.with_audio_only_checkbox = QtWidgets.QCheckBox("With audio only")
+        self.with_audio_only_checkbox.setToolTip("Show only subtitles that have corresponding audio files")
+        
+        # Refresh button
+        refresh_btn = QtWidgets.QPushButton("🔄 Refresh")
+        refresh_btn.setToolTip("Refresh subtitle data from files")
+        refresh_btn.clicked.connect(self.refresh_subtitle_editor)
+        
+        controls_layout.addWidget(lang_label)
+        controls_layout.addWidget(self.subtitle_lang_combo)
+        controls_layout.addWidget(category_label)
+        controls_layout.addWidget(self.subtitle_category_combo)
+        # controls_layout.addSeparator()
+        controls_layout.addWidget(self.orphaned_only_checkbox)
+        controls_layout.addWidget(self.modified_only_checkbox)
+        controls_layout.addWidget(self.with_audio_only_checkbox)
+        controls_layout.addStretch()
+        controls_layout.addWidget(refresh_btn)
+        
+        layout.addWidget(controls)
+        
+        # Connect signals AFTER creating widgets
+        self.subtitle_lang_combo.currentTextChanged.connect(self.on_subtitle_filter_changed)
+        self.subtitle_category_combo.currentTextChanged.connect(self.on_subtitle_filter_changed)
+        self.orphaned_only_checkbox.toggled.connect(self.on_subtitle_filter_changed)
+        self.modified_only_checkbox.toggled.connect(self.on_subtitle_filter_changed)
+        self.with_audio_only_checkbox.toggled.connect(self.on_subtitle_filter_changed)
+        
+        # Subtitle table - Audio column moved to end
+        self.subtitle_table = QtWidgets.QTableWidget()
+        self.subtitle_table.setColumnCount(4)
+        self.subtitle_table.setHorizontalHeaderLabels(["Key", "Original", "Current", "Audio"])
+        
+        # Set column widths
+        header = self.subtitle_table.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)  # Key
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)           # Original
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)           # Current
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)  # Audio
+        
+        self.subtitle_table.setAlternatingRowColors(True)
+        self.subtitle_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.subtitle_table.itemDoubleClicked.connect(self.edit_subtitle_from_table)
+        
+        # Context menu for table
+        self.subtitle_table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.subtitle_table.customContextMenuRequested.connect(self.show_subtitle_table_context_menu)
+        
+        layout.addWidget(self.subtitle_table)
+        
+        # Buttons - only Edit and Save
+        btn_widget = QtWidgets.QWidget()
+        btn_layout = QtWidgets.QHBoxLayout(btn_widget)
+        
+        edit_btn = QtWidgets.QPushButton("✏ Edit Selected")
+        edit_btn.clicked.connect(self.edit_selected_subtitle)
+        
+        btn_layout.addWidget(edit_btn)
+        btn_layout.addStretch()
+        
+        # Save button
+        save_all_btn = QtWidgets.QPushButton("💾 Save All Changes")
+        save_all_btn.clicked.connect(self.save_all_subtitle_changes)
+        btn_layout.addWidget(save_all_btn)
+        
+        layout.addWidget(btn_widget)
+        
+        # Store for later use
+        self.subtitle_editor_loaded = False
+        self.audio_keys_cache = None
+        self.subtitle_loader_thread = None
+        
+        # Add tab
+        self.tabs.addTab(tab, "Subtitle Editor")
+
+        # Connect to global search
+        self.global_search.searchChanged.connect(self.on_global_search_changed_for_subtitles)
+
+    def cancel_subtitle_loading(self):
+        """Cancel current subtitle loading operation"""
+        if self.subtitle_loader_thread and self.subtitle_loader_thread.isRunning():
+            self.subtitle_loader_thread.stop()
+            self.subtitle_loader_thread.wait(2000)  # Wait max 2 seconds
+        
+        self.hide_subtitle_loading_ui()
+        self.subtitle_status_label.setText("Loading cancelled")
+
+    def show_subtitle_loading_ui(self):
+        """Show loading UI elements"""
+        self.subtitle_progress.setVisible(True)
+        self.subtitle_cancel_btn.setVisible(True)
+        
+        # Disable controls during loading
+        self.subtitle_lang_combo.setEnabled(False)
+        self.subtitle_category_combo.setEnabled(False)
+        self.orphaned_only_checkbox.setEnabled(False)
+        # self.subtitle_search.setEnabled(False)
+
+    def hide_subtitle_loading_ui(self):
+        """Hide loading UI elements"""
+        self.subtitle_progress.setVisible(False)
+        self.subtitle_cancel_btn.setVisible(False)
+        
+        # Re-enable controls
+        self.subtitle_lang_combo.setEnabled(True)
+        self.subtitle_category_combo.setEnabled(True)
+        self.orphaned_only_checkbox.setEnabled(True)
+        # self.subtitle_search.setEnabled(True)
+
+    def clear_subtitle_search(self):
+        """Clear subtitle search"""
+        self.subtitle_search.clear()
+    def refresh_subtitle_editor(self):
+        """Refresh subtitle editor data"""
+        DEBUG.log("Refreshing subtitle editor")
+        
+        # Clear cache
+        self.audio_keys_cache = None
+        
+        # Rescan localization folder
+        self.scan_localization_folder()
+        
+        # Repopulate controls
+        self.populate_subtitle_editor_controls()
+        
+        # Show status
+        self.status_bar.showMessage("Subtitle editor refreshed", 2000)
+
+    def populate_subtitle_editor_controls(self):
+        """Populate language and category controls"""
+        DEBUG.log("Populating subtitle editor controls")
+        
+        # Temporarily disconnect signals to avoid triggering during population
+        self.subtitle_lang_combo.currentTextChanged.disconnect()
+        self.subtitle_category_combo.currentTextChanged.disconnect()
+        
+        try:
+            # Get available languages and categories
+            languages = set()
+            categories = set()
+            
+            for file_info in self.all_subtitle_files.values():
+                languages.add(file_info['language'])
+                categories.add(file_info['category'])
+            
+            DEBUG.log(f"Found languages: {languages}")
+            DEBUG.log(f"Found categories: {categories}")
+            
+            # Store current selections
+            current_lang = self.subtitle_lang_combo.currentText()
+            current_category = self.subtitle_category_combo.currentText()
+            
+            # Populate language combo
+            self.subtitle_lang_combo.clear()
+            if languages:
+                sorted_languages = sorted(languages)
+                self.subtitle_lang_combo.addItems(sorted_languages)
+                
+                # Set current language
+                settings_lang = self.settings.data["subtitle_lang"]
+                if settings_lang in languages:
+                    self.subtitle_lang_combo.setCurrentText(settings_lang)
+                elif current_lang in languages:
+                    self.subtitle_lang_combo.setCurrentText(current_lang)
+                elif sorted_languages:
+                    self.subtitle_lang_combo.setCurrentText(sorted_languages[0])
+            else:
+                # Add default language if no files found
+                self.subtitle_lang_combo.addItem("en")
+            
+            # Populate category combo
+            self.subtitle_category_combo.clear()
+            self.subtitle_category_combo.addItem("All Categories")
+            if categories:
+                sorted_categories = sorted(categories)
+                self.subtitle_category_combo.addItems(sorted_categories)
+                
+                if current_category and current_category != "All Categories":
+                    if current_category in categories:
+                        self.subtitle_category_combo.setCurrentText(current_category)
+            
+            DEBUG.log(f"Language combo: {self.subtitle_lang_combo.count()} items")
+            DEBUG.log(f"Category combo: {self.subtitle_category_combo.count()} items")
+            
+        finally:
+            # Reconnect signals
+            self.subtitle_lang_combo.currentTextChanged.connect(self.on_subtitle_filter_changed)
+            self.subtitle_category_combo.currentTextChanged.connect(self.on_subtitle_filter_changed)
+        
+        # Load initial data
+        self.load_subtitle_editor_data()
+
+    def build_audio_keys_cache(self):
+        """Build cache of audio keys for orphaned subtitle detection"""
+        if self.audio_keys_cache is not None:
+            return self.audio_keys_cache
+        
+        DEBUG.log("Building audio keys cache...")
+        self.audio_keys_cache = set()
+        
+        for entry in self.all_files:
+            shortname = entry.get("ShortName", "")
+            if shortname:
+                audio_key = os.path.splitext(shortname)[0]
+                self.audio_keys_cache.add(audio_key)
+        
+        DEBUG.log(f"Built cache with {len(self.audio_keys_cache)} audio keys")
+        return self.audio_keys_cache
+
+    def on_subtitle_filter_changed(self):
+        """Handle filter changes with debouncing"""
+        # Cancel previous timer if exists
+        if hasattr(self, 'filter_timer'):
+            self.filter_timer.stop()
+        
+        # Create new timer with delay to avoid too frequent updates
+        self.filter_timer = QtCore.QTimer()
+        self.filter_timer.setSingleShot(True)
+        self.filter_timer.timeout.connect(self.load_subtitle_editor_data)
+        self.filter_timer.start(500)  # 500ms delay
+
+    def on_subtitle_search_changed(self):
+        """Handle search changes with debouncing"""
+        # Cancel previous timer if exists
+        if hasattr(self, 'search_timer'):
+            self.search_timer.stop()
+        
+        # Create new timer with delay
+        self.search_timer = QtCore.QTimer()
+        self.search_timer.setSingleShot(True)
+        self.search_timer.timeout.connect(self.load_subtitle_editor_data)
+        self.search_timer.start(800)  # 800ms delay for search
+
+
+    def load_subtitle_editor_data(self):
+        """Load subtitle data for editor asynchronously"""
+        selected_lang = self.subtitle_lang_combo.currentText()
+        selected_category = self.subtitle_category_combo.currentText()
+        orphaned_only = self.orphaned_only_checkbox.isChecked()
+        modified_only = self.modified_only_checkbox.isChecked()
+        with_audio_only = self.with_audio_only_checkbox.isChecked()
+        search_text = self.get_global_search_text()  # Use global search
+        
+        DEBUG.log(f"Loading subtitle editor data: lang={selected_lang}, category={selected_category}, orphaned={orphaned_only}, modified={modified_only}, with_audio={with_audio_only}")
+        
+        if not selected_lang:
+            DEBUG.log("No language selected")
+            self.subtitle_table.setRowCount(0)
+            self.subtitle_status_label.setText("No language selected")
+            return
+        
+        # Validate filter combinations
+        if orphaned_only and with_audio_only:
+            # Conflicting filters - disable one
+            self.with_audio_only_checkbox.setChecked(False)
+            with_audio_only = False
+        
+        # Cancel previous loading if running
+        if self.subtitle_loader_thread and self.subtitle_loader_thread.isRunning():
+            self.subtitle_loader_thread.stop()
+            self.subtitle_loader_thread.wait(1000)
+        
+        # Build audio keys cache if needed
+        if (orphaned_only or with_audio_only) and self.audio_keys_cache is None:
+            self.build_audio_keys_cache()
+        
+        # Show loading UI
+        self.show_subtitle_loading_ui()
+        self.subtitle_status_label.setText("Loading subtitles...")
+        self.subtitle_progress.setValue(0)
+        
+        # Clear table while loading
+        self.subtitle_table.setRowCount(0)
+        
+        # Start loading thread
+        self.subtitle_loader_thread = SubtitleLoaderThread(
+            self, self.all_subtitle_files, self.locres_manager, 
+            self.subtitles, self.original_subtitles,
+            selected_lang, selected_category, orphaned_only, modified_only, with_audio_only,
+            search_text, self.audio_keys_cache, self.modified_subtitles
+        )
+        
+        # Connect signals
+        self.subtitle_loader_thread.dataLoaded.connect(self.on_subtitle_data_loaded)
+        self.subtitle_loader_thread.statusUpdate.connect(self.subtitle_status_label.setText)
+        self.subtitle_loader_thread.progressUpdate.connect(self.subtitle_progress.setValue)
+        
+        # Start thread
+        self.subtitle_loader_thread.start()
+
+    def on_subtitle_data_loaded(self, subtitles_to_show):
+        """Handle loaded subtitle data"""
+        self.hide_subtitle_loading_ui()
+        
+        # Populate table
+        self.populate_subtitle_table(subtitles_to_show)
+        
+        # Update status with detailed info
+        status_parts = [f"{len(subtitles_to_show)} subtitles"]
+        
+        filters_active = []
+        if self.orphaned_only_checkbox.isChecked():
+            filters_active.append("without audio")
+        
+        if self.modified_only_checkbox.isChecked():
+            filters_active.append("modified only")
+            
+        if self.with_audio_only_checkbox.isChecked():
+            filters_active.append("with audio only")
+        
+        search_text = self.get_global_search_text().strip()
+        if search_text:
+            filters_active.append(f"search: '{search_text}'")
+        
+        selected_category = self.subtitle_category_combo.currentText()
+        if selected_category != "All Categories":
+            filters_active.append(f"category: {selected_category}")
+        
+        if filters_active:
+            status_parts.append(f"({', '.join(filters_active)})")
+        
+        self.subtitle_status_label.setText(" ".join(status_parts))
+
+    def build_audio_keys_cache(self):
+        """Build cache of audio keys for orphaned subtitle detection"""
+        if self.audio_keys_cache is not None:
+            return
+        
+        DEBUG.log("Building audio keys cache...")
+        self.audio_keys_cache = set()
+        
+        for entry in self.all_files:
+            shortname = entry.get("ShortName", "")
+            if shortname:
+                audio_key = os.path.splitext(shortname)[0]
+                self.audio_keys_cache.add(audio_key)
+        
+        DEBUG.log(f"Built cache with {len(self.audio_keys_cache)} audio keys")
+
+    def populate_subtitle_table(self, subtitles_to_show):
+        """Populate the subtitle table with data"""
+        self.subtitle_table.setRowCount(len(subtitles_to_show))
+        
+        if len(subtitles_to_show) == 0:
+            return
+        
+        # Sort by key for consistent display
+        sorted_items = sorted(subtitles_to_show.items())
+        
+        for row, (key, data) in enumerate(sorted_items):
+            # Key column (0)
+            key_item = QtWidgets.QTableWidgetItem(key)
+            key_item.setFlags(key_item.flags() & ~QtCore.Qt.ItemIsEditable)
+            self.subtitle_table.setItem(row, 0, key_item)
+            
+            # Original column (1)
+            original_text = data['original']
+            original_display = self.truncate_text(original_text, 150)
+            original_item = QtWidgets.QTableWidgetItem(original_display)
+            original_item.setFlags(original_item.flags() & ~QtCore.Qt.ItemIsEditable)
+            original_item.setToolTip(original_text)
+            self.subtitle_table.setItem(row, 1, original_item)
+            
+            # Current column (2)
+            current_text = data['current']
+            current_display = self.truncate_text(current_text, 150)
+            current_item = QtWidgets.QTableWidgetItem(current_display)
+            current_item.setToolTip(current_text)
+            self.subtitle_table.setItem(row, 2, current_item)
+            
+            # Audio column (3) - moved to end
+            has_audio = data.get('has_audio', False)
+            audio_item = QtWidgets.QTableWidgetItem("🔊" if has_audio else "")
+            audio_item.setFlags(audio_item.flags() & ~QtCore.Qt.ItemIsEditable)
+            audio_item.setToolTip("Has audio file" if has_audio else "No audio file")
+            audio_item.setTextAlignment(QtCore.Qt.AlignCenter)
+            self.subtitle_table.setItem(row, 3, audio_item)
+            
+            # Highlight modified rows
+            is_modified = data.get('is_modified', False)
+            if is_modified:
+                for col in range(4):
+                    item = self.subtitle_table.item(row, col)
+                    if item:
+                        item.setBackground(QtGui.QColor(255, 255, 200))  # Light yellow
+            
+            # Highlight search matches
+            search_text = self.get_global_search_text().lower().strip()
+            if search_text:
+                if (search_text in key.lower() or 
+                    search_text in original_text.lower() or 
+                    search_text in current_text.lower()):
+                    for col in range(4):
+                        item = self.subtitle_table.item(row, col)
+                        if item:
+                            font = item.font()
+                            font.setBold(True)
+                            item.setFont(font)
+
+    def truncate_text(self, text, max_length):
+        """Truncate text for display"""
+        if len(text) <= max_length:
+            return text
+        return text[:max_length-3] + "..."
+
+    def edit_subtitle_from_table(self, item):
+        """Edit subtitle from table double-click"""
+        row = item.row()
+        key = self.subtitle_table.item(row, 0).text()
+        current_text = self.subtitle_table.item(row, 2).text()
+        original_text = self.subtitle_table.item(row, 1).text()
+        
+        editor = SubtitleEditor(self, key, current_text, original_text)
+        if editor.exec_() == QtWidgets.QDialog.Accepted:
+            new_text = editor.get_text()
+            self.subtitles[key] = new_text
+            
+            # Update table
+            self.subtitle_table.item(row, 2).setText(new_text[:100] + "..." if len(new_text) > 100 else new_text)
+            self.subtitle_table.item(row, 2).setToolTip(new_text)
+            
+            # Mark as modified
+            if new_text != original_text:
+                self.modified_subtitles.add(key)
+                for col in range(3):
+                    item = self.subtitle_table.item(row, col)
+                    item.setBackground(QtGui.QColor(255, 255, 200))
+            else:
+                self.modified_subtitles.discard(key)
+                for col in range(3):
+                    item = self.subtitle_table.item(row, col)
+                    item.setBackground(QtGui.QColor(255, 255, 255))
+            
+            self.update_status()
+
+    def add_new_subtitle(self):
+        """Add new subtitle entry"""
+        key, ok = QtWidgets.QInputDialog.getText(
+            self, "Add Subtitle", "Enter subtitle key (e.g., VO_Character_Action_01):"
+        )
+        
+        if not ok or not key:
+            return
+            
+        # Clean the key
+        key = key.strip()
+        if not key:
+            return
+            
+        if key in self.subtitles:
+            QtWidgets.QMessageBox.warning(self, "Key Exists", f"Subtitle key '{key}' already exists!")
+            return
+            
+        # Get text for the subtitle
+        editor = SubtitleEditor(self, key, "", "")
+        if editor.exec_() == QtWidgets.QDialog.Accepted:
+            new_text = editor.get_text()
+            
+            # Add to main subtitle data
+            self.subtitles[key] = new_text
+            self.modified_subtitles.add(key)
+            
+            DEBUG.log(f"Added new subtitle: {key} = {new_text[:50]}...")
+            
+            # Refresh the table
+            self.load_subtitle_editor_data()
+            self.update_status()
+            
+            # Select the new row
+            for row in range(self.subtitle_table.rowCount()):
+                if self.subtitle_table.item(row, 0).text() == key:
+                    self.subtitle_table.selectRow(row)
+                    break
+
+
+    def edit_selected_subtitle(self):
+        """Edit currently selected subtitle"""
+        current_row = self.subtitle_table.currentRow()
+        if current_row >= 0:
+            item = self.subtitle_table.item(current_row, 0)
+            if item:
+                self.edit_subtitle_from_table(item)
+
+    def delete_selected_subtitle(self):
+        """Delete selected subtitle"""
+        current_row = self.subtitle_table.currentRow()
+        if current_row >= 0:
+            key = self.subtitle_table.item(current_row, 0).text()
+            
+            reply = QtWidgets.QMessageBox.question(
+                self, "Delete Subtitle",
+                f"Are you sure you want to delete subtitle:\n{key}?",
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+            )
+            
+            if reply == QtWidgets.QMessageBox.Yes:
+                if key in self.subtitles:
+                    del self.subtitles[key]
+                self.modified_subtitles.discard(key)
+                self.load_subtitle_editor_data()  # Refresh table
+                self.update_status()
+
+    def save_all_subtitle_changes(self):
+        """Save all subtitle changes to working files"""
+        self.save_subtitles_to_file()
+        QtWidgets.QMessageBox.information(self, "Saved", "All subtitle changes have been saved!")
+
+    def show_subtitle_table_context_menu(self, pos):
+        """Show context menu for subtitle table"""
+        item = self.subtitle_table.itemAt(pos)
+        if not item:
+            return
+        
+        row = item.row()
+        key = self.subtitle_table.item(row, 0).text()
+        has_audio = self.subtitle_table.item(row, 3).text() == "🔊"  # Audio column now at index 3
+        
+        menu = QtWidgets.QMenu()
+        
+        # Edit action
+        edit_action = menu.addAction("✏ Edit Subtitle")
+        edit_action.triggered.connect(lambda: self.edit_subtitle_from_table(item))
+        
+        # Revert action
+        revert_action = menu.addAction("↩ Revert to Original")
+        revert_action.triggered.connect(lambda: self.revert_subtitle_from_table(row, key))
+        
+        menu.addSeparator()
+        
+        # Go to audio action (only if audio exists)
+        if has_audio:
+            goto_audio_action = menu.addAction("🔊 Go to Audio File")
+            goto_audio_action.triggered.connect(lambda: self.go_to_audio_file(key))
+        
+        menu.addSeparator()
+        
+        # Copy actions
+        copy_key_action = menu.addAction("📋 Copy Key")
+        copy_key_action.triggered.connect(lambda: QtWidgets.QApplication.clipboard().setText(key))
+        
+        copy_text_action = menu.addAction("📋 Copy Text")
+        current_text = self.subtitle_table.item(row, 2).toolTip() or self.subtitle_table.item(row, 2).text()
+        copy_text_action.triggered.connect(lambda: QtWidgets.QApplication.clipboard().setText(current_text))
+        
+        menu.exec_(self.subtitle_table.mapToGlobal(pos))
+
+    def go_to_audio_file(self, subtitle_key):
+        """Navigate to audio file corresponding to subtitle"""
+        DEBUG.log(f"Looking for audio file for subtitle key: {subtitle_key}")
+        
+        # Find the audio file entry
+        target_entry = None
+        target_lang = None
+        
+        for entry in self.all_files:
+            shortname = entry.get("ShortName", "")
+            if shortname:
+                audio_key = os.path.splitext(shortname)[0]
+                if audio_key == subtitle_key:
+                    target_entry = entry
+                    target_lang = entry.get("Language", "SFX")
+                    break
+        
+        if not target_entry:
+            QtWidgets.QMessageBox.information(
+                self, "Audio Not Found", 
+                f"Could not find audio file for subtitle key: {subtitle_key}"
+            )
+            return
+        
+        DEBUG.log(f"Found audio file: {target_entry.get('ShortName')} in language: {target_lang}")
+        
+        # Switch to the appropriate language tab
+        for i in range(self.tabs.count()):
+            tab_text = self.tabs.tabText(i)
+            if target_lang in tab_text:
+                # Switch to tab
+                self.tabs.setCurrentIndex(i)
+                
+                # Populate tree if not already done
+                if target_lang not in self.populated_tabs:
+                    self.populate_tree(target_lang)
+                    self.populated_tabs.add(target_lang)
+                
+                # Find and select the item in tree
+                self.find_and_select_audio_item(target_lang, target_entry)
+                
+                # Show success message
+                self.status_bar.showMessage(f"Navigated to audio file: {target_entry.get('ShortName')}", 3000)
+                return
+        
+        QtWidgets.QMessageBox.information(
+            self, "Tab Not Found", 
+            f"Could not find tab for language: {target_lang}"
+        )
+
+    def find_and_select_audio_item(self, lang, target_entry):
+        """Find and select audio item in tree"""
+        if lang not in self.tab_widgets:
+            return
+        
+        tree = self.tab_widgets[lang]["tree"]
+        target_id = target_entry.get("Id", "")
+        target_shortname = target_entry.get("ShortName", "")
+        
+        # Search through all items
+        root = tree.invisibleRootItem()
+        
+        def search_items(parent_item):
+            for i in range(parent_item.childCount()):
+                item = parent_item.child(i)
+                
+                # Check if this is the target item
+                if item.childCount() == 0:  # Leaf item
+                    entry = item.data(0, QtCore.Qt.UserRole)
+                    if entry:
+                        if (entry.get("Id") == target_id or 
+                            entry.get("ShortName") == target_shortname):
+                            # Found it! Select and expand to show
+                            tree.clearSelection()
+                            tree.setCurrentItem(item)
+                            item.setSelected(True)
+                            
+                            # Expand parent if needed
+                            parent = item.parent()
+                            if parent:
+                                parent.setExpanded(True)
+                            
+                            # Scroll to item
+                            tree.scrollToItem(item)
+                            
+                            # Update selection in details panel
+                            self.on_selection_changed(lang)
+                            
+                            return True
+                else:
+                    # Search in children
+                    if search_items(item):
+                        return True
+            return False
+        
+        if not search_items(root):
+            DEBUG.log(f"Could not find item in tree for: {target_shortname}")
+
+    def revert_subtitle_from_table(self, row, key):
+        """Revert subtitle to original from table"""
+        original_text = self.subtitle_table.item(row, 1).toolTip() or self.subtitle_table.item(row, 1).text()  # Original now at index 1
+        
+        # Update subtitle data
+        self.subtitles[key] = original_text
+        self.modified_subtitles.discard(key)
+        
+        # Update table - Current column is now at index 2
+        current_item = self.subtitle_table.item(row, 2)
+        current_item.setText(self.truncate_text(original_text, 150))
+        current_item.setToolTip(original_text)
+        
+        # Remove highlighting
+        for col in range(4):
+            item = self.subtitle_table.item(row, col)
+            if item:
+                item.setBackground(QtGui.QColor(255, 255, 255))
+        
+        self.update_status()
 
     def create_language_tab(self, lang):
         tab = QtWidgets.QWidget()
@@ -1150,31 +2176,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         card = QtWidgets.QGroupBox("Instructions")
         card_layout = QtWidgets.QVBoxLayout(card)
         
-        instructions = QtWidgets.QLabel(
-            "WEM Converter:\n"
-            "1. Select the root WWISE folder containing .cache/Windows/SFX subfolders\n"
-            "2. Files will be renamed to their ID from SoundbanksInfo.json\n"
-            "3. Converted files will be moved to MOD_P/OPP/Content/WwiseAudio/Windows/English(US)\n\n"
-            "THIS WILL CHANGE ONLY ENGLISH AUDIO\n\n"
-            
-            "Subtitle Exporter:\n"
-            "1. Modified subtitles will be exported to MOD_P/OPP/Content/Localization/OPP_Subtitles\n"
-            "2. Each language will have its own folder (ru-RU, en, fr-FR, etc.)\n"
-            "3. Use 'Export Subtitles for Game' to import new subtitles\n\n\n"
-            
-            "Конвертер WEM:\n"
-            "1. Выберите корневую папку WWISE, содержащую подпапки .cache/Windows/SFX\n"
-            "2. Файлы будут переименованы в соответствии с их ID из SoundbanksInfo.json\n"
-            "3. Конвертированные файлы будут перемещены в MOD_P/OPP/Content/WwiseAudio/Windows/English(US)\n\n"
-            "ИЗМЕНЯЕТСЯ ТОЛЬКО АНГЛИЙСКОЕ АУДИО\n\n"
-            
-            "Экспортер субтитров:\n"
-            "1. Изменённые субтитры будут экспортированы в MOD_P/OPP/Content/Localization/OPP_Subtitles\n"
-            "2. Для каждого языка будет создана отдельная папка (ru-RU, en, fr-FR и т.д.)\n"
-            "3. Используйте 'Экспорт субтитров для игры' для импорта новых субтитр"
-            
-            
-        )
+        instructions = QtWidgets.QLabel(self.tr("converter_instructions"))
         instructions.setWordWrap(True)
         card_layout.addWidget(instructions)
         
@@ -1577,7 +2579,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
     #     page1 = QtWidgets.QWidget()
     #     page1_layout = QtWidgets.QVBoxLayout(page1)
     #     page1_content = QtWidgets.QLabel("""
-    #     <h2>Welcome to WEM Subtitle Studio!</h2>
+    #     <h2>Welcome to OutlastTrials AudioEditor!</h2>
     #     <p style="font-size: 14px;">This tutorial will guide you through the basic workflow.</p>
         
     #     <h3>Step 1: Understanding the Interface</h3>
@@ -1719,7 +2721,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
     #     msg.setText(tips_text)
     #     msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
     #     msg.exec_()
-
+    
     def check_updates(self):
         """Check for updates"""
         QtWidgets.QMessageBox.information(
@@ -1774,7 +2776,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         
         def copy_report():
             report = f"""
-    BUG REPORT - WEM Subtitle Studio v2.4 DEBUG
+    BUG REPORT - OutlastTrials AudioEditor v1.0
     ==========================================
     Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     Email: {email_edit.text() or 'Not provided'}
@@ -2297,10 +3299,9 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         except Exception as e:
             DEBUG.log(f"Error deploying mod: {str(e)}", "ERROR")
             QtWidgets.QMessageBox.warning(self, "Error", str(e))
-
     def export_subtitles_for_game(self):
-        """Export modified subtitles to game mod structure"""
-        DEBUG.log("=== Export Subtitles for Game ===")
+        """Export modified subtitles to game mod structure with new folder structure"""
+        DEBUG.log("=== Export Subtitles for Game (New Structure) ===")
         
         if not self.modified_subtitles:
             QtWidgets.QMessageBox.information(self, "No Changes", "No modified subtitles to export")
@@ -2310,44 +3311,83 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         progress.show()
         
         try:
-
-            base_dir = os.path.join(self.mod_p_path, "OPP", "Content", "Localization", "OPP_Subtitles")
-            os.makedirs(base_dir, exist_ok=True)
-            DEBUG.log(f"Created base directory: {base_dir}")
+            exported_files = 0
             
-
-            current_lang = self.settings.data["subtitle_lang"]
-            lang_dir = os.path.join(base_dir, current_lang)
-            os.makedirs(lang_dir, exist_ok=True)
-            DEBUG.log(f"Created language directory: {lang_dir}")
+            # Group modified subtitles by their source files
+            subtitle_files_to_update = {}
             
-
-            locres_path = os.path.join(lang_dir, "OPP_Subtitles.locres")
-            progress.set_progress(50, f"Writing {current_lang}/OPP_Subtitles.locres...")
-
-            original_locres = os.path.join(".", "Localization", current_lang, "OPP_Subtitles.locres")
-            if os.path.exists(original_locres):
-                DEBUG.log(f"Copying original locres from: {original_locres}")
-                shutil.copy2(original_locres, locres_path)
-
-                DEBUG.log(f"Updating locres with {len(self.modified_subtitles)} modified subtitles")
-                success = self.locres_manager.import_locres(locres_path, self.subtitles)
+            for modified_key in self.modified_subtitles:
+                # Find which file this subtitle belongs to
+                found_in_file = None
+                
+                for file_key, file_info in self.all_subtitle_files.items():
+                    file_subtitles = self.locres_manager.export_locres(file_info['path'])
+                    if modified_key in file_subtitles:
+                        found_in_file = file_info
+                        break
+                
+                if found_in_file:
+                    file_path = found_in_file['path']
+                    if file_path not in subtitle_files_to_update:
+                        subtitle_files_to_update[file_path] = {
+                            'file_info': found_in_file,
+                            'subtitles': {}
+                        }
+                    subtitle_files_to_update[file_path]['subtitles'][modified_key] = self.subtitles[modified_key]
+            
+            DEBUG.log(f"Found {len(subtitle_files_to_update)} subtitle files to update")
+            
+            # Process each file
+            for i, (file_path, data) in enumerate(subtitle_files_to_update.items()):
+                file_info = data['file_info']
+                modified_subs = data['subtitles']
+                
+                progress.set_progress(
+                    int((i / len(subtitle_files_to_update)) * 100),
+                    f"Processing {file_info['filename']}..."
+                )
+                
+                # Create target directory structure
+                target_dir = os.path.join(
+                    self.mod_p_path, "OPP", "Content", 
+                    "Localization", file_info['category'], file_info['language']
+                )
+                os.makedirs(target_dir, exist_ok=True)
+                
+                target_file = os.path.join(target_dir, file_info['filename'])
+                
+                DEBUG.log(f"Exporting to: {target_file}")
+                
+                # Copy original file to target
+                shutil.copy2(file_path, target_file)
+                
+                # Load all subtitles from original file
+                all_file_subtitles = self.locres_manager.export_locres(file_path)
+                
+                # Update with modifications
+                all_file_subtitles.update(modified_subs)
+                
+                # Write updated file
+                success = self.locres_manager.import_locres(target_file, all_file_subtitles)
                 
                 if success:
-                    progress.append_details(f"✓ Created {locres_path}")
-                    progress.set_progress(100, "Export complete!")
-                    
-                    QtWidgets.QMessageBox.information(
-                        self, "Success", 
-                        f"Subtitles exported successfully!\n\n"
-                        f"Location: {base_dir}\n\n"
-                        f"Modified subtitles: {len(self.modified_subtitles)}"
-                    )
+                    exported_files += 1
+                    progress.append_details(f"✓ {file_info['relative_path']}")
+                    DEBUG.log(f"Successfully exported {file_info['filename']}")
                 else:
-                    raise Exception("Failed to import subtitles to locres file")
-            else:
-                raise Exception(f"Original locres file not found: {original_locres}")
-                
+                    progress.append_details(f"✗ {file_info['relative_path']} - FAILED")
+                    DEBUG.log(f"Failed to export {file_info['filename']}", "ERROR")
+            
+            progress.set_progress(100, "Export complete!")
+            
+            QtWidgets.QMessageBox.information(
+                self, "Success", 
+                f"Subtitles exported successfully!\n\n"
+                f"Files exported: {exported_files}\n"
+                f"Modified subtitles: {len(self.modified_subtitles)}\n\n"
+                f"Location: {os.path.join(self.mod_p_path, 'OPP', 'Content', 'Localization')}"
+            )
+            
         except Exception as e:
             DEBUG.log(f"Export error: {str(e)}", "ERROR")
             QtWidgets.QMessageBox.warning(self, "Export Error", str(e))
@@ -2440,22 +3480,19 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         
         # File menu
         file_menu = menubar.addMenu(self.tr("file_menu"))
-        
+
         self.save_action = file_menu.addAction(self.tr("save_subtitles"))
         self.save_action.setShortcut("Ctrl+S")
         self.save_action.triggered.connect(self.save_subtitles_to_file)
-        
+
         self.export_action = file_menu.addAction(self.tr("export_subtitles"))
         self.export_action.triggered.connect(self.export_subtitles)
-        
+
         self.import_action = file_menu.addAction(self.tr("import_subtitles"))
         self.import_action.triggered.connect(self.import_subtitles)
-        
-        self.import_custom_action = file_menu.addAction(self.tr("import_custom_subtitles"))
-        self.import_custom_action.triggered.connect(self.import_custom_subtitles)
-        
+
         file_menu.addSeparator()
-        
+
         self.exit_action = file_menu.addAction(self.tr("exit"))
         self.exit_action.setShortcut("Ctrl+Q")
         self.exit_action.triggered.connect(self.close)
@@ -3049,18 +4086,95 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             self.settings.save()
 
     def open_target_folder(self):
-        target_dir = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)")
-        if os.path.exists(target_dir):
-            os.startfile(target_dir)
-        else:
+        """Open target folder with choice for SFX or Voice"""
+        voice_dir = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)")
+        sfx_dir = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows")
+        loc_dir = os.path.join(self.mod_p_path, "OPP", "Content", "Localization")
+        
+        # Create dialog to choose which folder to open
+        dialog = QtWidgets.QDialog(self)
+        dialog.setWindowTitle("Select Folder to Open")
+        dialog.setMinimumWidth(400)
+        
+        layout = QtWidgets.QVBoxLayout(dialog)
+        
+        label = QtWidgets.QLabel("Which folder would you like to open?")
+        layout.addWidget(label)
+        
+        # Buttons for different folders
+        btn_layout = QtWidgets.QVBoxLayout()
+        
+        if os.path.exists(voice_dir):
+            voice_btn = QtWidgets.QPushButton(f"🎙 Voice Files\n{voice_dir}")
+            voice_btn.clicked.connect(lambda: (os.startfile(voice_dir), dialog.accept()))
+            btn_layout.addWidget(voice_btn)
+        
+        if os.path.exists(sfx_dir) and sfx_dir != voice_dir:
+            sfx_btn = QtWidgets.QPushButton(f"🔊 SFX Files\n{sfx_dir}")
+            sfx_btn.clicked.connect(lambda: (os.startfile(sfx_dir), dialog.accept()))
+            btn_layout.addWidget(sfx_btn)
+        
+        if os.path.exists(loc_dir):
+            loc_btn = QtWidgets.QPushButton(f"📝 Subtitles\n{loc_dir}")
+            loc_btn.clicked.connect(lambda: (os.startfile(loc_dir), dialog.accept()))
+            btn_layout.addWidget(loc_btn)
+        
+        layout.addLayout(btn_layout)
+        
+        # Cancel button
+        cancel_btn = QtWidgets.QPushButton("Cancel")
+        cancel_btn.clicked.connect(dialog.reject)
+        layout.addWidget(cancel_btn)
+        
+        if not any(os.path.exists(d) for d in [voice_dir, sfx_dir, loc_dir]):
+            QtWidgets.QMessageBox.warning(self, "Error", "No target folders found!")
+            return
+        
+        dialog.exec_()
 
-            loc_dir = os.path.join(self.mod_p_path, "OPP", "Content", "Localization", "OPP_Subtitles")
-            if os.path.exists(loc_dir):
-                os.startfile(loc_dir)
-            else:
-                QtWidgets.QMessageBox.warning(self, "Error", "Target folder not found!")
+    def classify_wem_file(self, filename, file_mappings):
+        """Classify WEM file as SFX or Voice based on various criteria"""
+        base_name = os.path.splitext(filename)[0]
+        
+        # Remove common suffixes
+        clean_base_name = base_name
+        if "_" in base_name:
+            clean_base_name = base_name.rsplit("_", 1)[0]
+        
+        # Check direct mappings first
+        for mapping_type, mapping_dict in file_mappings.items():
+            if clean_base_name in mapping_dict:
+                return mapping_type, mapping_dict[clean_base_name]
+            if base_name in mapping_dict:
+                return mapping_type, mapping_dict[base_name]
+        
+        # Fallback to pattern matching
+        sfx_patterns = [
+            'sfx', 'sound', 'fx', 'effect', 'ambient', 'footstep', 'ui',
+            'menu', 'button', 'click', 'whoosh', 'impact', 'explosion',
+            'weapon', 'reload', 'pickup', 'drop', 'door', 'machinery'
+        ]
+        
+        voice_patterns = [
+            'vo_', 'voice', 'dialogue', 'speech', 'talk', 'whisper',
+            'scream', 'grunt', 'breath', 'gasp'
+        ]
+        
+        filename_lower = filename.lower()
+        
+        # Check for SFX patterns
+        if any(pattern in filename_lower for pattern in sfx_patterns):
+            return 'sfx', None
+        
+        # Check for voice patterns
+        if any(pattern in filename_lower for pattern in voice_patterns):
+            return 'voice', None
+        
+        # Default to voice if uncertain
+        return 'voice', None
 
     def process_wem_files(self):
+        """Process WEM files with SFX support"""
         wwise_root = self.wwise_path_edit.text()
         if not wwise_root or not os.path.exists(wwise_root):
             QtWidgets.QMessageBox.warning(self, "Error", "Invalid WWISE folder path!")
@@ -3068,7 +4182,8 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             
         progress = ProgressDialog(self, "Processing WEM Files")
         progress.show()
-
+        
+        # Find SFX paths
         sfx_paths = []
         for root, dirs, files in os.walk(wwise_root):
             if root.endswith(".cache\\Windows\\SFX"):
@@ -3078,50 +4193,185 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             progress.close()
             QtWidgets.QMessageBox.warning(self, "Error", "No .cache/Windows/SFX/ folders found!")
             return
-            
-        target_dir = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)")
-        os.makedirs(target_dir, exist_ok=True)
-
-        name_to_id = {}
-        for entry in self.entries_by_lang.get("English(US)", []):
+        
+        # Create target directories
+        target_dir_voice = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)")
+        target_dir_sfx = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows")
+        
+        os.makedirs(target_dir_voice, exist_ok=True)
+        os.makedirs(target_dir_sfx, exist_ok=True)
+        
+        # Create mapping for different file types
+        voice_name_to_id = {}  # For voice files (English(US) language)
+        sfx_name_to_id = {}    # For SFX files
+        
+        # Build mappings from soundbank data
+        for entry in self.all_files:
             base_shortname = os.path.splitext(entry.get("ShortName", ""))[0]
-            name_to_id[base_shortname] = entry.get("Id", "")
+            file_id = entry.get("Id", "")
+            language = entry.get("Language", "")
+            source = entry.get("Source", "")
             
+            if language == "SFX" or source == "MediaFilesNotInAnyBank":
+                # This is an SFX file
+                sfx_name_to_id[base_shortname] = {
+                    'id': file_id,
+                    'language': language,
+                    'source': source,
+                    'original_name': entry.get("ShortName", "")
+                }
+            elif language == "English(US)" or language == "":
+                # This is a voice file
+                voice_name_to_id[base_shortname] = {
+                    'id': file_id,
+                    'language': language,
+                    'source': source,
+                    'original_name': entry.get("ShortName", "")
+                }
+        
+        DEBUG.log(f"Found {len(voice_name_to_id)} voice files and {len(sfx_name_to_id)} SFX files in soundbank")
+        
         processed = 0
+        voice_processed = 0
+        sfx_processed = 0
+        skipped = 0
         total_files = sum(len([f for f in os.listdir(p) if f.endswith(".wem")]) for p in sfx_paths)
         
         self.converter_status.clear()
+        self.converter_status.append("=== Processing WEM Files ===")
+        self.converter_status.append(f"Voice target: {target_dir_voice}")
+        self.converter_status.append(f"SFX target: {target_dir_sfx}")
+        self.converter_status.append("")
         
         for sfx_path in sfx_paths:
+            DEBUG.log(f"Processing folder: {sfx_path}")
+            
             for filename in os.listdir(sfx_path):
                 if filename.endswith(".wem"):
                     src_path = os.path.join(sfx_path, filename)
                     base_name = os.path.splitext(filename)[0]
                     
+                    # Remove suffix if present (e.g., "_1234" from end)
                     if "_" in base_name:
-                        base_name = base_name.rsplit("_", 1)[0]
+                        clean_base_name = base_name.rsplit("_", 1)[0]
+                    else:
+                        clean_base_name = base_name
+                    
+                    # Determine file type and target
+                    is_sfx = False
+                    file_info = None
+                    dest_filename = filename  # Default
+                    target_dir = target_dir_voice  # Default
+                    
+                    # First check if it's in SFX mapping
+                    if clean_base_name in sfx_name_to_id:
+                        is_sfx = True
+                        file_info = sfx_name_to_id[clean_base_name]
+                        dest_filename = f"{file_info['id']}.wem"
+                        target_dir = target_dir_sfx
                         
-                    id_ = name_to_id.get(base_name)
-                    dest_filename = f"{id_}.wem" if id_ else filename
+                    # Then check if it's in voice mapping
+                    elif clean_base_name in voice_name_to_id:
+                        is_sfx = False
+                        file_info = voice_name_to_id[clean_base_name]
+                        dest_filename = f"{file_info['id']}.wem"
+                        target_dir = target_dir_voice
+                        
+                    # Try alternative matching by checking the full base_name
+                    elif base_name in sfx_name_to_id:
+                        is_sfx = True
+                        file_info = sfx_name_to_id[base_name]
+                        dest_filename = f"{file_info['id']}.wem"
+                        target_dir = target_dir_sfx
+                        
+                    elif base_name in voice_name_to_id:
+                        is_sfx = False
+                        file_info = voice_name_to_id[base_name]
+                        dest_filename = f"{file_info['id']}.wem"
+                        target_dir = target_dir_voice
+                    
+                    else:
+                        # Unknown file - try to guess by name patterns
+                        if any(pattern in filename.lower() for pattern in ['sfx', 'sound', 'fx', 'effect', 'ambient', 'footstep', 'ui']):
+                            is_sfx = True
+                            target_dir = target_dir_sfx
+                            dest_filename = filename  # Keep original name
+                            self.converter_status.append(f"⚠ Guessed SFX: {filename}")
+                        else:
+                            is_sfx = False
+                            target_dir = target_dir_voice
+                            dest_filename = filename  # Keep original name
+                            self.converter_status.append(f"⚠ Guessed Voice: {filename}")
+                    
                     dest_path = os.path.join(target_dir, dest_filename)
                     
                     try:
+                        # Check if destination file already exists
+                        if os.path.exists(dest_path):
+                            # Create backup name
+                            base_dest_name = os.path.splitext(dest_filename)[0]
+                            counter = 1
+                            while os.path.exists(os.path.join(target_dir, f"{base_dest_name}_{counter}.wem")):
+                                counter += 1
+                            dest_filename = f"{base_dest_name}_{counter}.wem"
+                            dest_path = os.path.join(target_dir, dest_filename)
+                        
+                        # Move file
                         shutil.move(src_path, dest_path)
                         processed += 1
+                        
+                        if is_sfx:
+                            sfx_processed += 1
+                            icon = "🔊"
+                            type_text = "SFX"
+                        else:
+                            voice_processed += 1
+                            icon = "🎙"
+                            type_text = "Voice"
                         
                         progress.set_progress(
                             int((processed / total_files) * 100),
                             f"Processing {filename}..."
                         )
                         
-                        self.converter_status.append(f"✓ {filename} → {dest_filename}")
+                        # Log the move
+                        if file_info:
+                            self.converter_status.append(f"{icon} {type_text}: {filename} → {dest_filename} (ID: {file_info['id']})")
+                        else:
+                            self.converter_status.append(f"{icon} {type_text}: {filename} → {dest_filename} (Unknown)")
+                            
                         QtWidgets.QApplication.processEvents()
                         
                     except Exception as e:
-                        self.converter_status.append(f"✗ {filename}: {str(e)}")
+                        self.converter_status.append(f"✗ ERROR: {filename} - {str(e)}")
+                        skipped += 1
+                        DEBUG.log(f"Error processing {filename}: {e}", "ERROR")
                         
         progress.close()
-        self.converter_status.append(f"\nProcessed {processed} files successfully")
+        
+        # Show summary
+        self.converter_status.append("")
+        self.converter_status.append("=== Processing Complete ===")
+        self.converter_status.append(f"Total files processed: {processed}")
+        self.converter_status.append(f"Voice files (English(US)): {voice_processed}")
+        self.converter_status.append(f"SFX files: {sfx_processed}")
+        if skipped > 0:
+            self.converter_status.append(f"Skipped/Errors: {skipped}")
+        self.converter_status.append("")
+        self.converter_status.append(f"Voice files location: {target_dir_voice}")
+        self.converter_status.append(f"SFX files location: {target_dir_sfx}")
+        
+        # Show completion dialog
+        QtWidgets.QMessageBox.information(
+            self, "Processing Complete",
+            f"Successfully processed {processed} WEM files!\n\n"
+            f"Voice files: {voice_processed} → English(US) folder\n"
+            f"SFX files: {sfx_processed} → Windows folder\n"
+            f"Errors: {skipped}\n\n"
+            f"Check the log for details."
+        )
+        
+        DEBUG.log(f"WEM processing complete: {processed} total, {voice_processed} voice, {sfx_processed} SFX, {skipped} errors")
 
     def export_subtitles(self):
         path, _ = QtWidgets.QFileDialog.getSaveFileName(
@@ -3222,7 +4472,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         auto_save_check = QtWidgets.QCheckBox("Auto-save subtitles every 5 minutes")
         auto_save_check.setChecked(self.settings.data.get("auto_save", True))
         
-        layout.addRow("Interface Language (APP WILL CLOSE):", lang_combo)
+        layout.addRow("Interface Language (NEED RESTART):", lang_combo)
         layout.addRow("Theme:", theme_combo)
         layout.addRow("Subtitle Language:", subtitle_combo)
         layout.addRow("Game Path:", game_path_widget)
@@ -3276,13 +4526,16 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
     def update_ui_language(self):
         """Update all UI elements with new language"""
         self.setWindowTitle(self.tr("app_title"))
-
+        
+        # Update menus
         self.menuBar().clear()
         self.create_menu_bar()
         
+        # Update tabs
         for i, (lang, widgets) in enumerate(self.tab_widgets.items()):
-            if i < self.tabs.count() - 1:  # Skip converter tab
+            if i < self.tabs.count() - 1:  # Skip subtitle editor tab
                 # Update filter combo
+                current_filter = widgets["filter_combo"].currentIndex()
                 widgets["filter_combo"].clear()
                 widgets["filter_combo"].addItems([
                     self.tr("all_files"), 
@@ -3291,15 +4544,33 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     self.tr("modified"),
                     self.tr("modded")
                 ])
+                widgets["filter_combo"].setCurrentIndex(current_filter)
                 
+                # Find and update group boxes in the tab
+                tab_widget = self.tabs.widget(i)
+                if tab_widget:
+                    self.update_group_boxes_recursively(tab_widget)
 
-                subtitle_group = widgets["subtitle_text"].parent().parent()
-                if subtitle_group:
-                    subtitle_group.setTitle(self.tr("subtitle_preview"))
-                    
-                info_group = widgets["info_labels"]["id"].parent().parent()
-                if info_group:
-                    info_group.setTitle(self.tr("file_info"))
+    def update_group_boxes_recursively(self, widget):
+        """Recursively find and update QGroupBox titles"""
+        # Check if this widget is a QGroupBox
+        if isinstance(widget, QtWidgets.QGroupBox):
+            title = widget.title()
+            # Update known group box titles
+            if "subtitle" in title.lower() or "preview" in title.lower():
+                widget.setTitle(self.tr("subtitle_preview"))
+            elif "file" in title.lower() or "info" in title.lower():
+                widget.setTitle(self.tr("file_info"))
+        
+        # Recursively check child widgets
+        for child in widget.findChildren(QtWidgets.QWidget):
+            if isinstance(child, QtWidgets.QGroupBox):
+                title = child.title()
+                # Update known group box titles
+                if "subtitle" in title.lower() or "preview" in title.lower():
+                    child.setTitle(self.tr("subtitle_preview"))
+                elif "file" in title.lower() or "info" in title.lower():
+                    child.setTitle(self.tr("file_info"))
 
     def update_status(self):
         total_files = len(self.all_files)
@@ -3311,55 +4582,84 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             status_text += f" | Modified: {modified}"
             
         self.status_bar.showMessage(status_text)
-
     def save_subtitles_to_file(self):
-        """Save subtitles to working copy of locres file"""
-        DEBUG.log("=== Saving Subtitles ===")
+        """Save subtitles to working copies with new structure"""
+        DEBUG.log("=== Saving Subtitles (New Structure) ===")
         
         try:
-            subtitle_lang = self.settings.data["subtitle_lang"]
-            working_locres_path = os.path.join(".", "Localization", subtitle_lang, "OPP_Subtitles_working.locres")
-            working_locres_path = os.path.abspath(working_locres_path)
+            saved_files = 0
             
-            DEBUG.log(f"Saving to working copy: {working_locres_path}")
-
-            os.makedirs(os.path.dirname(working_locres_path), exist_ok=True)
-
-            if not os.path.exists(working_locres_path):
-                original_locres_path = os.path.join(".", "Localization", subtitle_lang, "OPP_Subtitles.locres")
-                if os.path.exists(original_locres_path):
-                    DEBUG.log("Creating working copy from original")
-                    shutil.copy2(original_locres_path, working_locres_path)
+            # Group modified subtitles by their source files
+            files_to_save = {}
+            
+            for modified_key in self.modified_subtitles:
+                # Find which file this subtitle belongs to
+                found_in_file = None
+                
+                for file_key, file_info in self.all_subtitle_files.items():
+                    file_subtitles = self.locres_manager.export_locres(file_info['path'])
+                    if modified_key in file_subtitles:
+                        found_in_file = file_info
+                        break
+                
+                if found_in_file:
+                    file_path = found_in_file['path']
+                    if file_path not in files_to_save:
+                        files_to_save[file_path] = {
+                            'file_info': found_in_file,
+                            'all_subtitles': self.locres_manager.export_locres(file_path)
+                        }
+                    
+                    # Update with current subtitle
+                    files_to_save[file_path]['all_subtitles'][modified_key] = self.subtitles[modified_key]
+            
+            # Save each file
+            for file_path, data in files_to_save.items():
+                file_info = data['file_info']
+                all_subtitles = data['all_subtitles']
+                
+                # Create working copy path
+                working_path = file_path.replace('.locres', '_working.locres')
+                
+                DEBUG.log(f"Saving working copy: {working_path}")
+                
+                # Ensure directory exists
+                os.makedirs(os.path.dirname(working_path), exist_ok=True)
+                
+                # Copy original if working copy doesn't exist
+                if not os.path.exists(working_path):
+                    shutil.copy2(file_path, working_path)
+                
+                # Save updated subtitles
+                success = self.locres_manager.import_locres(working_path, all_subtitles)
+                
+                if success:
+                    saved_files += 1
+                    DEBUG.log(f"Successfully saved {file_info['filename']}")
                 else:
-                    QtWidgets.QMessageBox.warning(self, "Error", "No original locres file found to create working copy")
-                    return
-
-            DEBUG.log(f"Saving {len(self.modified_subtitles)} modified subtitles")
-            success = self.locres_manager.import_locres(working_locres_path, self.subtitles)
+                    DEBUG.log(f"Failed to save {file_info['filename']}", "ERROR")
             
-            if success:
-
-                json_path = os.path.join(".", "Localization", subtitle_lang, "OPP_Subtitles_working.json")
+            # Clear modified status
+            self.modified_subtitles.clear()
+            
+            # Re-mark modified subtitles by comparing with originals
+            for key, value in self.subtitles.items():
+                if key in self.original_subtitles and self.original_subtitles[key] != value:
+                    self.modified_subtitles.add(key)
+            
+            self.update_status()
+            self.status_bar.showMessage(f"Saved {saved_files} subtitle files", 3000)
+            
+            # Refresh subtitle editor if it's active
+            if hasattr(self, 'subtitle_table'):
+                self.load_subtitle_editor_data()
+            
+            # Update all tabs to refresh modified markers
+            for lang in self.populated_tabs:
+                self.populate_tree(lang)
                 
-                with open(json_path, "w", encoding="utf-8") as f:
-                    json.dump({"Subtitles": self.subtitles}, f, ensure_ascii=False, indent=2)
-                
-                DEBUG.log(f"Saved JSON backup to: {json_path}")
-                
-                self.modified_subtitles.clear()
-
-                for key, value in self.subtitles.items():
-                    if key in self.original_subtitles and self.original_subtitles[key] != value:
-                        self.modified_subtitles.add(key)
-                
-                self.update_status()
-                self.status_bar.showMessage("Subtitles saved to working copy", 3000)
-
-                for lang in self.populated_tabs:
-                    self.populate_tree(lang)
-            else:
-                QtWidgets.QMessageBox.warning(self, "Save Error", "Failed to save subtitles to locres file")
-                
+            DEBUG.log(f"Saved {saved_files} files successfully")
+            
         except Exception as e:
             DEBUG.log(f"Save error: {str(e)}", "ERROR")
             QtWidgets.QMessageBox.warning(self, "Save Error", str(e))
@@ -3374,7 +4674,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
     def show_about(self):
         """Show about dialog with animations"""
         about_dialog = QtWidgets.QDialog(self)
-        about_dialog.setWindowTitle("About WEM Subtitle Studio")
+        about_dialog.setWindowTitle("About OutlastTrials AudioEditor")
         about_dialog.setMinimumSize(600, 500)
         
         layout = QtWidgets.QVBoxLayout(about_dialog)
@@ -3480,7 +4780,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         license_content.setHtml("""
         <div style="padding: 20px;">
         <h3>License Agreement</h3>
-        <p>Copyright (c) 2025 WEM Subtitle Studio</p>
+        <p>Copyright (c) 2025 OutlastTrials AudioEditor</p>
         
         <p>Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal
