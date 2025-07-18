@@ -960,7 +960,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         DEBUG.log("=== OutlastTrials AudioEditor Started Successfully ===")
 
     def update_auto_save_timer(self):
-        """Обновить состояние таймера автосохранения"""
         auto_save_setting = self.settings.data.get("auto_save", True)
         
         if self.auto_save_timer.isActive():
@@ -1908,9 +1907,8 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         
         self.update_status()
 
-    # ИСПРАВЛЕНО: Функция process_wem_files с правильной классификацией
+ 
     def process_wem_files(self):
-        """ИСПРАВЛЕНО: Process WEM files with proper language filtering for all sources"""
         wwise_root = self.wwise_path_edit.text()
         if not wwise_root or not os.path.exists(wwise_root):
             QtWidgets.QMessageBox.warning(self, "Error", "Invalid WWISE folder path!")
@@ -1930,11 +1928,11 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.warning(self, "Error", "No .cache/Windows/SFX/ folders found!")
             return
         
-        # Получаем выбранный язык из настроек
+
         selected_language = self.settings.data.get("wem_process_language", "english")
         DEBUG.log(f"Selected WEM process language: {selected_language}")
         
-        # Определяем пути и код языка
+
         if selected_language == "english":
             target_dir_voice = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)")
             voice_lang_filter = ["English(US)"]
@@ -1950,7 +1948,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         os.makedirs(target_dir_voice, exist_ok=True)
         os.makedirs(target_dir_sfx, exist_ok=True)
         
-        # Сбор всех WEM файлов на диске для анализа
         all_wem_files = []
         vo_wem_files = []
         
@@ -1966,12 +1963,10 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         DEBUG.log(f"Found {len(vo_wem_files)} VO WEM files on disk")
         DEBUG.log(f"First 10 VO WEM files on disk: {vo_wem_files[:10]}")
         
-        # ИСПРАВЛЕНО: Строим маппинги с правильной фильтрацией по языку
         voice_mapping = {}  
         sfx_mapping = {}    
         voice_files_in_db = []
-        
-        # Статистика по источникам VO файлов
+
         vo_from_streamed = 0
         vo_from_media_files = 0
         vo_skipped_wrong_lang = 0
@@ -1989,10 +1984,9 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 'source': source,
                 'original_name': shortname
             }
-            
-            # ИСПРАВЛЕНО: VO файлы обрабатываем только для выбранного языка из ОБОИХ источников
+
             if base_shortname.startswith("VO_"):
-                # Проверяем язык для ВСЕХ VO файлов
+
                 if language in voice_lang_filter:
                     voice_mapping[base_shortname] = file_info
                     voice_files_in_db.append(base_shortname)
@@ -2002,15 +1996,14 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                         DEBUG.log(f"Added StreamedFiles VO: {base_shortname} -> ID {file_id} ({language})")
                     elif source == "MediaFilesNotInAnyBank":
                         vo_from_media_files += 1
-                        if vo_from_media_files <= 10:  # Логируем первые 10
+                        if vo_from_media_files <= 10:  
                             DEBUG.log(f"Added MediaFilesNotInAnyBank VO: {base_shortname} -> ID {file_id} ({language})")
                 else:
-                    # Пропускаем VO файлы с неправильным языком
+          
                     vo_skipped_wrong_lang += 1
-                    if vo_skipped_wrong_lang <= 5:  # Логируем первые 5 пропущенных
+                    if vo_skipped_wrong_lang <= 5: 
                         DEBUG.log(f"Skipped VO (wrong language): {base_shortname} -> ID {file_id} ({language})")
             
-            # SFX маппинг остается прежним (язык не важен для SFX)
             elif language == "SFX" or (source == "MediaFilesNotInAnyBank" and not base_shortname.startswith("VO_")):
                 sfx_mapping[base_shortname] = file_info
         
@@ -2019,8 +2012,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         DEBUG.log(f"Voice files skipped (wrong language): {vo_skipped_wrong_lang}")
         DEBUG.log(f"Total voice files for {selected_language}: {len(voice_files_in_db)}")
         DEBUG.log(f"First 10 voice files in database: {voice_files_in_db[:10]}")
-        
-        # Анализ соответствий между диском и базой
+
         exact_matches = []
         potential_matches = []
         
@@ -2028,16 +2020,15 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             if wem_file in voice_mapping:
                 exact_matches.append(wem_file)
             else:
-                # Более интеллектуальное удаление hex суффиксов
+   
                 wem_without_hex = wem_file
-                
-                # Удаляем hex суффикс если он есть (обычно _XXXXXXXX в конце)
+
                 if '_' in wem_file:
                     parts = wem_file.split('_')
-                    # Проверяем последнюю часть на hex (8 символов)
+   
                     if len(parts) > 1 and len(parts[-1]) == 8:
                         try:
-                            int(parts[-1], 16)  # Проверяем что это hex
+                            int(parts[-1], 16) 
                             wem_without_hex = '_'.join(parts[:-1])
                             DEBUG.log(f"Removing hex suffix: {wem_file} -> {wem_without_hex}")
                         except ValueError:
@@ -2050,8 +2041,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         DEBUG.log(f"Potential matches (after removing hex): {len(potential_matches)}")
         DEBUG.log(f"First 5 exact matches: {exact_matches[:5]}")
         DEBUG.log(f"First 5 potential matches: {potential_matches[:5]}")
-        
-        # Добавляем потенциальные соответствия в voice_mapping
+
         for wem_file, db_file in potential_matches:
             if db_file in voice_mapping:
                 voice_mapping[wem_file] = voice_mapping[db_file].copy()
@@ -2059,18 +2049,16 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 DEBUG.log(f"Added potential match: {wem_file} -> {voice_mapping[wem_file]['id']} (via {db_file}) [{voice_mapping[wem_file]['language']}]")
         
         DEBUG.log(f"Voice mapping after adding potential matches: {len(voice_mapping)} files")
-        
-        # Проверка на дубликаты имен с разными языками
+
         name_to_ids = {}
         for name, info in voice_mapping.items():
             base_name = name.split('_')
             if len(base_name) > 3:
-                check_name = '_'.join(base_name[:4])  # Берем первые 4 части имени
+                check_name = '_'.join(base_name[:4]) 
                 if check_name not in name_to_ids:
                     name_to_ids[check_name] = []
                 name_to_ids[check_name].append((info['id'], info['language']))
         
-        # Логируем файлы с одинаковыми именами но разными языками
         for name, ids in name_to_ids.items():
             if len(ids) > 1:
                 DEBUG.log(f"WARNING: Multiple IDs for similar name '{name}': {ids}")
@@ -2115,8 +2103,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     if is_voice:
                         target_dir = target_dir_voice
                         classification = f"Voice ({selected_language})"
-                        
-                        # Прямой поиск в обновленном маппинге
+
                         if base_name in voice_mapping:
                             file_info = voice_mapping[base_name]
                             dest_filename = f"{file_info['id']}.wem"
@@ -2130,7 +2117,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                             DEBUG.log(f"NO MATCH FOUND for {filename}")
                             
                     else:
-                        # SFX логика остается прежней
+
                         classification = "SFX"
                         search_keys = [
                             base_name,
@@ -2151,7 +2138,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     dest_path = os.path.join(target_dir, dest_filename)
                     
                     try:
-                        # Обработка дубликатов
+
                         if os.path.exists(dest_path):
                             base_dest_name = os.path.splitext(dest_filename)[0]
                             counter = 1
@@ -2205,9 +2192,8 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             f"Kept original names: {processed - renamed_count}"
         )
 
-    # ИСПРАВЛЕНО: Функция сохранения субтитров
     def save_subtitles_to_file(self):
-        """ИСПРАВЛЕНО: Save subtitles to working copies with proper file handling"""
+
         DEBUG.log("=== Saving Subtitles (Fixed) ===")
         
         if not self.modified_subtitles:
@@ -2217,19 +2203,16 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         try:
             saved_files = 0
             current_language = self.settings.data["subtitle_lang"]
-            
-            # ИСПРАВЛЕНО: Группировка изменённых субтитров по файлам
+
             files_to_save = {}
             
             for modified_key in self.modified_subtitles:
                 found_in_file = None
                 
-                # Ищем файл, содержащий этот ключ
                 for file_key, file_info in self.all_subtitle_files.items():
                     if file_info['language'] != current_language:
                         continue
-                        
-                    # ИСПРАВЛЕНО: Проверяем рабочую копию в первую очередь
+
                     working_path = file_info['path'].replace('.locres', '_working.locres')
                     check_path = working_path if os.path.exists(working_path) else file_info['path']
                     
@@ -2241,7 +2224,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 if found_in_file:
                     file_path = found_in_file['path']
                     if file_path not in files_to_save:
-                        # ИСПРАВЛЕНО: Загружаем все субтитры из рабочей копии или оригинала
+
                         working_path = file_path.replace('.locres', '_working.locres')
                         source_path = working_path if os.path.exists(working_path) else file_path
                         
@@ -2250,8 +2233,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                             'all_subtitles': self.locres_manager.export_locres(source_path),
                             'working_path': working_path
                         }
-                    
-                    # Обновляем субтитр
+
                     files_to_save[file_path]['all_subtitles'][modified_key] = self.subtitles[modified_key]
                 else:
                     DEBUG.log(f"Warning: Could not find source file for modified key: {modified_key}", "WARNING")
@@ -2261,24 +2243,20 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             if not files_to_save:
                 DEBUG.log("No files found to save modifications", "WARNING")
                 return
-            
-            # ИСПРАВЛЕНО: Сохраняем каждый файл
+
             for file_path, data in files_to_save.items():
                 file_info = data['file_info']
                 all_subtitles = data['all_subtitles']
                 working_path = data['working_path']
                 
                 DEBUG.log(f"Saving working copy: {working_path}")
-                
-                # Создаём директорию если нужно
+
                 os.makedirs(os.path.dirname(working_path), exist_ok=True)
-                
-                # ИСПРАВЛЕНО: Копируем оригинал в рабочую копию если её ещё нет
+
                 if not os.path.exists(working_path):
                     shutil.copy2(file_path, working_path)
                     DEBUG.log(f"Created working copy from original: {file_path}")
-                
-                # ИСПРАВЛЕНО: Сохраняем обновлённые субтитры
+
                 success = self.locres_manager.import_locres(working_path, all_subtitles)
                 
                 if success:
@@ -2286,19 +2264,16 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     DEBUG.log(f"Successfully saved {file_info['filename']}")
                 else:
                     DEBUG.log(f"Failed to save {file_info['filename']}", "ERROR")
-            
-            # ИСПРАВЛЕНО: Обновляем статус после сохранения
+
             self.update_status()
             
             if saved_files > 0:
                 self.status_bar.showMessage(f"Saved {saved_files} subtitle files", 3000)
                 DEBUG.log(f"Successfully saved {saved_files} files")
-            
-            # Обновляем редактор субтитров если активен
+
             if hasattr(self, 'subtitle_table'):
                 QtCore.QTimer.singleShot(100, self.load_subtitle_editor_data)
-            
-            # Обновляем все вкладки
+
             for lang in self.populated_tabs:
                 self.populate_tree(lang)
                 
@@ -2309,7 +2284,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             
         DEBUG.log("=== Save Complete ===")
 
-    # ИСПРАВЛЕНО: Настройки с поддержкой французского языка
     def show_settings_dialog(self):
         dialog = QtWidgets.QDialog(self)
         dialog.setWindowTitle(self.tr("settings"))
@@ -2351,8 +2325,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
 
         auto_save_check = QtWidgets.QCheckBox("Auto-save subtitles every 5 minutes")
         auto_save_check.setChecked(self.settings.data.get("auto_save", True))
-        
-        # ДОБАВЛЕНО: Настройка для французского аудио
+
         french_audio_check = QtWidgets.QCheckBox("Rename French audio files to ID (in addition to English)")
         french_audio_check.setChecked(self.settings.data.get("rename_french_audio", False))
         french_audio_check.setToolTip("When enabled, French VO files will also be renamed to their ID when processing WEM files")
@@ -2393,7 +2366,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             self.settings.data["wem_process_language"] = wem_lang_combo.currentData() 
             self.settings.save()
 
-            # ДОБАВЛЕНО: Логирование изменения настройки французского аудио
             if wem_lang_combo.currentData() != old_wem_lang:
                 DEBUG.log(f"WEM process language changed: {old_wem_lang} → {wem_lang_combo.currentData()}")
 
@@ -2417,7 +2389,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     
                 self.update_status()
 
-    # Остальные методы остаются без изменений...
     def browse_game_path(self, edit_widget):
         folder = QtWidgets.QFileDialog.getExistingDirectory(
             self, self.tr("select_game_path"), 
@@ -2428,17 +2399,16 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             edit_widget.setText(folder)
 
     def update_ui_language(self):
-        """Update all UI elements with new language"""
         self.setWindowTitle(self.tr("app_title"))
         
-        # Update menus
+        # update menus
         self.menuBar().clear()
         self.create_menu_bar()
         
-        # Update tabs
+        # update tabs
         for i, (lang, widgets) in enumerate(self.tab_widgets.items()):
-            if i < self.tabs.count() - 1:  # Skip subtitle editor tab
-                # Update filter combo
+            if i < self.tabs.count() - 1:
+                # update filter combo
                 current_filter = widgets["filter_combo"].currentIndex()
                 widgets["filter_combo"].clear()
                 widgets["filter_combo"].addItems([
@@ -2450,27 +2420,24 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 ])
                 widgets["filter_combo"].setCurrentIndex(current_filter)
                 
-                # Find and update group boxes in the tab
                 tab_widget = self.tabs.widget(i)
                 if tab_widget:
                     self.update_group_boxes_recursively(tab_widget)
 
     def update_group_boxes_recursively(self, widget):
-        """Recursively find and update QGroupBox titles"""
-        # Check if this widget is a QGroupBox
+
         if isinstance(widget, QtWidgets.QGroupBox):
             title = widget.title()
-            # Update known group box titles
+
             if "subtitle" in title.lower() or "preview" in title.lower():
                 widget.setTitle(self.tr("subtitle_preview"))
             elif "file" in title.lower() or "info" in title.lower():
                 widget.setTitle(self.tr("file_info"))
-        
-        # Recursively check child widgets
+
         for child in widget.findChildren(QtWidgets.QWidget):
             if isinstance(child, QtWidgets.QGroupBox):
                 title = child.title()
-                # Update known group box titles
+
                 if "subtitle" in title.lower() or "preview" in title.lower():
                     child.setTitle(self.tr("subtitle_preview"))
                 elif "file" in title.lower() or "info" in title.lower():
@@ -2495,15 +2462,13 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 data = json.load(f)
             
             soundbanks_info = data.get("SoundBanksInfo", {})
-            
-            # StreamedFiles
+
             streamed_files = soundbanks_info.get("StreamedFiles", [])
             for file_entry in streamed_files:
                 file_entry["Source"] = "StreamedFiles"
             all_files.extend(streamed_files)
             DEBUG.log(f"Loaded {len(streamed_files)} StreamedFiles")
-            
-            # MediaFilesNotInAnyBank
+
             media_files = soundbanks_info.get("MediaFilesNotInAnyBank", [])
             for file_entry in media_files:
                 file_entry["Source"] = "MediaFilesNotInAnyBank"
@@ -2530,7 +2495,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         return entries_by_lang
 
     def get_current_language(self):
-        """Get the current language from the active tab"""
+   
         current_index = self.tabs.currentIndex()
         if current_index >= 0 and current_index < len(self.tab_widgets):
             languages = list(self.tab_widgets.keys())
@@ -2557,7 +2522,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                         key = os.path.splitext(shortname)[0]
                         selected_keys.append(key)
         except RuntimeError:
-            # Items were already deleted, ignore
+
             pass
         filter_type = widgets["filter_combo"].currentIndex()
         sort_type = widgets["sort_combo"].currentIndex()
@@ -2567,7 +2532,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             tree.clear()
         except RuntimeError:
             DEBUG.log("Error clearing tree, creating new tree", "WARNING")
-            # If clearing fails, the tree might be corrupted
+   
             return
         
         filtered_entries = []
@@ -3440,7 +3405,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         except Exception as e:
             return False, str(e)
 
-    # Остальные методы UI...
     def create_menu_bar(self):
         menubar = self.menuBar()
         
