@@ -15,7 +15,7 @@
 [![Stars](https://img.shields.io/github/stars/Bezna/OutlastTrials_AudioEditor?style=for-the-badge&logo=github&color=orange)](https://github.com/Bezna/OutlastTrials_AudioEditor)
 [![Discord](https://img.shields.io/badge/Discord-Bezna-7289da?style=for-the-badge&logo=discord)](https://discord.com)
 
-[🚀 Quick Start](#-quick-start) • [✨ Features](#-features) • [📥 Download](#-installation) • [📖 Documentation](#-documentation) • [💬 Support](#-support--contact)
+[🚀 Quick Start](#-quick-start) • [✨ Features](#-features) • [📖 Documentation](#-documentation) • [💬 Support](#-support--contact)
 
 </div>
 
