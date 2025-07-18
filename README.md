@@ -2,9 +2,8 @@
 
 <div align="center">
 
-![Header Banner](https://via.placeholder.com/800x200/1a1a1a/ff6b6b?text=🎵+OutlastTrials+AudioEditor+🎵)
 
-**🔊 Professional Audio & Subtitle Editor for Outlast Trials 🔊**
+**🔊 Audio & Subtitle Editor for Outlast Trials 🔊**
 
 [![Version](https://img.shields.io/badge/version-0.4.beta-brightgreen?style=for-the-badge&logo=semantic-release)](https://github.com/Bezna/OutlastTrials_AudioEditor/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge&logo=opensourceinitiative)](LICENSE)
