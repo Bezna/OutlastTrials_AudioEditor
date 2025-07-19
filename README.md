@@ -217,9 +217,10 @@ Format: Vorbis ⚡ REQUIRED
 Quality: 3 (optimal balance) 
 Options: ✅ Insert filename marker ⚡ CRITICAL
 ```
+<img src="https://i.imgur.com/5QXSoQU.png" width="750" style="border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);"/>
 
 **Generate WEM File:**
-```bash
+```
 🔄 Click "Convert" to process audio
 📁 Locate WEM file in project folder
 ✅ Verify successful generation
