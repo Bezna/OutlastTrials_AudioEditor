@@ -12,7 +12,6 @@ from packaging import version
 from functools import partial
 from datetime import datetime
 from PyQt5 import QtWidgets, QtCore, QtGui, QtMultimedia
-
 if sys.platform == "win32":
     import subprocess
     startupinfo = subprocess.STARTUPINFO()
@@ -22,7 +21,7 @@ if sys.platform == "win32":
 else:
     startupinfo = None
     CREATE_NO_WINDOW = 0
-current_version = "v0.4-beta"
+current_version = "v0.5-beta"
 TRANSLATIONS = {
     "en": {
         "app_title": "OutlastTrials AudioEditor",
@@ -314,7 +313,6 @@ class SubtitleLoaderThread(QtCore.QThread):
         
     def stop(self):
         self._should_stop = True
-        
     def run(self):
         try:
             subtitles_to_show = {}
@@ -322,10 +320,15 @@ class SubtitleLoaderThread(QtCore.QThread):
 
             relevant_files = []
             for key, file_info in self.all_subtitle_files.items():
-                if file_info['language'] == self.selected_lang:
-                    if (self.selected_category == "All Categories" or 
-                        file_info['category'] == self.selected_category):
-                        relevant_files.append((key, file_info))
+                # Добавляем фильтрацию по языку
+                lang_match = (self.selected_lang == "All Languages" or 
+                            file_info.get('language') == self.selected_lang)
+                
+                category_match = (self.selected_category == "All Categories" or 
+                                file_info.get('category') == self.selected_category)
+                
+                if lang_match and category_match:
+                    relevant_files.append((key, file_info))
             
             total_files = len(relevant_files)
             
@@ -382,13 +385,13 @@ class SubtitleLoaderThread(QtCore.QThread):
             
             self.progressUpdate.emit(80)
             self.statusUpdate.emit("Processing additional subtitles...")
-            
+
+            # Обработка дополнительных субтитров
             for sub_key, sub_value in self.subtitles.items():
                 if self._should_stop:
                     return
                     
                 if sub_key not in subtitles_to_show:
-
                     has_audio = sub_key in self.audio_keys_cache if self.audio_keys_cache else False
                     
                     if self.orphaned_only and has_audio:
@@ -409,6 +412,13 @@ class SubtitleLoaderThread(QtCore.QThread):
                             self.search_text not in original_text.lower()):
                             continue
                     
+                    # Проверка категории и языка для дополнительных субтитров
+                    # Если нет file_info, пропускаем фильтрацию (или можно определить логику по ключу)
+                    if self.selected_category != "All Categories" or self.selected_lang != "All Languages":
+                        # Можно попробовать определить категорию/язык по ключу субтитра
+                        # Или пропустить эти субтитры при активной фильтрации
+                        continue
+                    
                     subtitles_to_show[sub_key] = {
                         'original': self.original_subtitles.get(sub_key, ""),
                         'current': sub_value,
@@ -425,8 +435,7 @@ class SubtitleLoaderThread(QtCore.QThread):
                 
         except Exception as e:
             DEBUG.log(f"Error in subtitle loader thread: {e}", "ERROR")
-            self.dataLoaded.emit({})
-
+            self.dataLoaded.emit({})        
 class UnrealLocresManager:
     """Manager for UnrealLocres.exe operations with debug logging"""
     
@@ -518,6 +527,11 @@ class UnrealLocresManager:
                 row_count = 0
                 subtitle_count = 0
                 
+                # Пропускаем заголовок
+                header = next(reader, None)
+                if header:
+                    DEBUG.log(f"CSV Header: {header}")
+                
                 for row in reader:
                     row_count += 1
                     if len(row) >= 2:
@@ -527,13 +541,20 @@ class UnrealLocresManager:
                         if row_count <= 5:
                             DEBUG.log(f"CSV Row {row_count}: key='{key}', value='{value[:50]}...'")
 
-                        if key.startswith('Subtitles/VO_'):
-                            key = key[10:]
-                            subtitles[key] = value
+                        if key and value:
+                            # Правильная обработка ключей субтитров
+                            if key.startswith('Subtitles/'):
+                                # Убираем префикс "Subtitles/" для сопоставления с audio ключами
+                                clean_key = key[10:]  # Убираем "Subtitles/"
+                            else:
+                                # Убираем ведущий слэш если есть
+                                clean_key = key.lstrip('/')
+                            
+                            subtitles[clean_key] = value
                             subtitle_count += 1
 
                             if subtitle_count <= 3:
-                                DEBUG.log(f"Found subtitle: {key} = {value[:50]}...")
+                                DEBUG.log(f"Found subtitle: {clean_key} = {value[:50]}...")
                                 
                 DEBUG.log(f"Total CSV rows processed: {row_count}")
                 DEBUG.log(f"Total subtitles found: {subtitle_count}")
@@ -550,7 +571,6 @@ class UnrealLocresManager:
             
         DEBUG.log(f"export_locres completed, returning {len(subtitles)} subtitles")
         return subtitles
-        
     def import_locres(self, locres_path, subtitles):
         """Import subtitle data to locres file"""
         DEBUG.log(f"Starting import_locres for: {locres_path}")
@@ -937,7 +957,8 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         self.is_playing_mod = False
         self.original_duration = 0
         self.mod_duration = 0
-
+        self.original_size = 0
+        self.mod_size = 0
         self.populated_tabs = set()
         self.modified_subtitles = set()
         self.current_file_duration = 0
@@ -1017,7 +1038,10 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     entry = item.data(0, QtCore.Qt.UserRole)
                     if entry:
                         id_ = entry.get("Id", "")
-                        mod_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)", f"{id_}.wem")
+                        if lang != "SFX":
+                            mod_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", lang, f"{entry.get('Id', '')}.wem")
+                        else:
+                            mod_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{entry.get('Id', '')}.wem")
                         if os.path.exists(mod_path):
                             file_list.append((entry.get("ShortName", ""), mod_path))
             
@@ -1042,7 +1066,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 
                 widgets["play_mod_btn"].hide()
                 widgets["info_labels"]["mod_duration"].setText("N/A")
-                widgets["duration_warning"].hide()
+                widgets["size_warning"].hide()
                 
                 self.populate_tree(lang)
                 self.status_bar.showMessage(f"Deleted {deleted} mod audio files", 3000)
@@ -1050,7 +1074,10 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             
         id_ = entry.get("Id", "")
         shortname = entry.get("ShortName", "")
-        mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)", f"{id_}.wem")
+        if lang != "SFX":
+            mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", lang, f"{entry.get('Id', '')}.wem")
+        else:
+            mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{entry.get('Id', '')}.wem")
         
         if not os.path.exists(mod_wem_path):
             return
@@ -1069,7 +1096,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 widgets = self.tab_widgets[lang]
                 widgets["play_mod_btn"].hide()
                 widgets["info_labels"]["mod_duration"].setText("N/A")
-                widgets["duration_warning"].hide()
+                widgets["size_warning"].hide()
 
                 self.populate_tree(lang)
                 self.status_bar.showMessage(f"Deleted mod audio for {shortname}", 3000)
@@ -1311,7 +1338,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         DEBUG.log("Refreshing subtitle editor")
         self.scan_localization_folder()
         self.populate_subtitle_editor_controls()
-        self.status_bar.showMessage("Subtitle editor refreshed", 2000)
+        self.status_bar.showMessage("Localization editor refreshed", 2000)
 
     def on_global_search_changed_for_subtitles(self, text):
         """Handle global search changes when on subtitle editor tab"""
@@ -1328,8 +1355,8 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         layout = QtWidgets.QVBoxLayout(tab)
         
         header = QtWidgets.QLabel("""
-        <h3>Subtitle Editor</h3>
-        <p>Edit subtitles directly. Use the global search bar above to filter results.</p>
+        <h3>Localization Editor</h3>
+        <p>Edit localization directly. Use the global search bar above to filter results.</p>
         """)
         layout.addWidget(header)
         
@@ -1358,10 +1385,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         controls = QtWidgets.QWidget()
         controls_layout = QtWidgets.QHBoxLayout(controls)
         
-        lang_label = QtWidgets.QLabel("Language:")
-        self.subtitle_lang_combo = QtWidgets.QComboBox()
-        self.subtitle_lang_combo.setMinimumWidth(120)
-        
         category_label = QtWidgets.QLabel("Category:")
         self.subtitle_category_combo = QtWidgets.QComboBox()
         self.subtitle_category_combo.setMinimumWidth(150)
@@ -1379,8 +1402,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         refresh_btn.setToolTip("Refresh subtitle data from files")
         refresh_btn.clicked.connect(self.refresh_subtitle_editor)
         
-        controls_layout.addWidget(lang_label)
-        controls_layout.addWidget(self.subtitle_lang_combo)
         controls_layout.addWidget(category_label)
         controls_layout.addWidget(self.subtitle_category_combo)
         controls_layout.addWidget(self.orphaned_only_checkbox)
@@ -1391,7 +1412,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         
         layout.addWidget(controls)
         
-        self.subtitle_lang_combo.currentTextChanged.connect(self.on_subtitle_filter_changed)
         self.subtitle_category_combo.currentTextChanged.connect(self.on_subtitle_filter_changed)
         self.orphaned_only_checkbox.toggled.connect(self.on_subtitle_filter_changed)
         self.modified_only_checkbox.toggled.connect(self.on_subtitle_filter_changed)
@@ -1435,7 +1455,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         self.audio_keys_cache = None
         self.subtitle_loader_thread = None
         
-        self.tabs.addTab(tab, "Subtitle Editor")
+        self.tabs.addTab(tab, "Localization Editor")
         self.global_search.searchChanged.connect(self.on_global_search_changed_for_subtitles)
 
     def cancel_subtitle_loading(self):
@@ -1452,7 +1472,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         self.subtitle_progress.setVisible(True)
         self.subtitle_cancel_btn.setVisible(True)
         
-        self.subtitle_lang_combo.setEnabled(False)
         self.subtitle_category_combo.setEnabled(False)
         self.orphaned_only_checkbox.setEnabled(False)
 
@@ -1461,45 +1480,24 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         self.subtitle_progress.setVisible(False)
         self.subtitle_cancel_btn.setVisible(False)
         
-        self.subtitle_lang_combo.setEnabled(True)
         self.subtitle_category_combo.setEnabled(True)
         self.orphaned_only_checkbox.setEnabled(True)
 
     def populate_subtitle_editor_controls(self):
-        """Populate language and category controls"""
+        """Populate category controls"""
         DEBUG.log("Populating subtitle editor controls")
         
-        self.subtitle_lang_combo.currentTextChanged.disconnect()
         self.subtitle_category_combo.currentTextChanged.disconnect()
         
         try:
-            languages = set()
             categories = set()
             
             for file_info in self.all_subtitle_files.values():
-                languages.add(file_info['language'])
                 categories.add(file_info['category'])
             
-            DEBUG.log(f"Found languages: {languages}")
             DEBUG.log(f"Found categories: {categories}")
             
-            current_lang = self.subtitle_lang_combo.currentText()
             current_category = self.subtitle_category_combo.currentText()
-            
-            self.subtitle_lang_combo.clear()
-            if languages:
-                sorted_languages = sorted(languages)
-                self.subtitle_lang_combo.addItems(sorted_languages)
-                
-                settings_lang = self.settings.data["subtitle_lang"]
-                if settings_lang in languages:
-                    self.subtitle_lang_combo.setCurrentText(settings_lang)
-                elif current_lang in languages:
-                    self.subtitle_lang_combo.setCurrentText(current_lang)
-                elif sorted_languages:
-                    self.subtitle_lang_combo.setCurrentText(sorted_languages[0])
-            else:
-                self.subtitle_lang_combo.addItem("en")
             
             self.subtitle_category_combo.clear()
             self.subtitle_category_combo.addItem("All Categories")
@@ -1511,14 +1509,23 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     if current_category in categories:
                         self.subtitle_category_combo.setCurrentText(current_category)
             
-            DEBUG.log(f"Language combo: {self.subtitle_lang_combo.count()} items")
             DEBUG.log(f"Category combo: {self.subtitle_category_combo.count()} items")
             
         finally:
-            self.subtitle_lang_combo.currentTextChanged.connect(self.on_subtitle_filter_changed)
             self.subtitle_category_combo.currentTextChanged.connect(self.on_subtitle_filter_changed)
         
         self.load_subtitle_editor_data()
+
+    
+    def on_subtitle_filter_changed(self):
+        """Handle filter changes with debouncing"""
+        if hasattr(self, 'filter_timer'):
+            self.filter_timer.stop()
+        
+        self.filter_timer = QtCore.QTimer()
+        self.filter_timer.setSingleShot(True)
+        self.filter_timer.timeout.connect(self.load_subtitle_editor_data)
+        self.filter_timer.start(500)
 
     def build_audio_keys_cache(self):
         """Build cache of audio keys for orphaned subtitle detection"""
@@ -1535,56 +1542,49 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 self.audio_keys_cache.add(audio_key)
         
         DEBUG.log(f"Built cache with {len(self.audio_keys_cache)} audio keys")
-        return self.audio_keys_cache
-
-    def on_subtitle_filter_changed(self):
-        """Handle filter changes with debouncing"""
-        if hasattr(self, 'filter_timer'):
-            self.filter_timer.stop()
         
-        self.filter_timer = QtCore.QTimer()
-        self.filter_timer.setSingleShot(True)
-        self.filter_timer.timeout.connect(self.load_subtitle_editor_data)
-        self.filter_timer.start(500)
+        # Добавим отладочную информацию для первых нескольких ключей
+        sample_keys = list(self.audio_keys_cache)[:5]
+        DEBUG.log(f"Sample audio keys: {sample_keys}")
+        
+        return self.audio_keys_cache
 
     def load_subtitle_editor_data(self):
         """Load subtitle data for editor asynchronously"""
-        selected_lang = self.subtitle_lang_combo.currentText()
         selected_category = self.subtitle_category_combo.currentText()
         orphaned_only = self.orphaned_only_checkbox.isChecked()
         modified_only = self.modified_only_checkbox.isChecked()
         with_audio_only = self.with_audio_only_checkbox.isChecked()
         search_text = self.get_global_search_text()
         
-        DEBUG.log(f"Loading subtitle editor data: lang={selected_lang}, category={selected_category}, orphaned={orphaned_only}, modified={modified_only}, with_audio={with_audio_only}")
+        DEBUG.log(f"Loading subtitle editor data: category={selected_category}, language={self.settings.data['subtitle_lang']}, orphaned={orphaned_only}, modified={modified_only}, with_audio={with_audio_only}")
         
-        if not selected_lang:
-            DEBUG.log("No language selected")
-            self.subtitle_table.setRowCount(0)
-            self.subtitle_status_label.setText("No language selected")
-            return
-        
+        # Проверяем взаимоисключающие фильтры
         if orphaned_only and with_audio_only:
             self.with_audio_only_checkbox.setChecked(False)
             with_audio_only = False
+            DEBUG.log("Disabled 'with_audio_only' because 'orphaned_only' is active")
         
         if self.subtitle_loader_thread and self.subtitle_loader_thread.isRunning():
             self.subtitle_loader_thread.stop()
             self.subtitle_loader_thread.wait(1000)
         
-        if (orphaned_only or with_audio_only) and self.audio_keys_cache is None:
-            self.build_audio_keys_cache()
+        # Строим кэш аудио ключей если нужен
+        if (orphaned_only or with_audio_only):
+            if self.audio_keys_cache is None:
+                self.build_audio_keys_cache()
+            DEBUG.log(f"Audio cache has {len(self.audio_keys_cache) if self.audio_keys_cache else 0} keys")
         
         self.show_subtitle_loading_ui()
         self.subtitle_status_label.setText("Loading subtitles...")
         self.subtitle_progress.setValue(0)
         
         self.subtitle_table.setRowCount(0)
-        
+
         self.subtitle_loader_thread = SubtitleLoaderThread(
             self, self.all_subtitle_files, self.locres_manager, 
             self.subtitles, self.original_subtitles,
-            selected_lang, selected_category, orphaned_only, modified_only, with_audio_only,
+            self.settings.data["subtitle_lang"], selected_category, orphaned_only, modified_only, with_audio_only,
             search_text, self.audio_keys_cache, self.modified_subtitles
         )
         
@@ -1593,7 +1593,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         self.subtitle_loader_thread.progressUpdate.connect(self.subtitle_progress.setValue)
         
         self.subtitle_loader_thread.start()
-
     def on_subtitle_data_loaded(self, subtitles_to_show):
         """Handle loaded subtitle data"""
         self.hide_subtitle_loading_ui()
@@ -1617,7 +1616,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             filters_active.append(f"search: '{search_text}'")
         
         selected_category = self.subtitle_category_combo.currentText()
-        if selected_category != "All Categories":
+        if selected_category and selected_category != "All Categories":
             filters_active.append(f"category: {selected_category}")
         
         if filters_active:
@@ -2540,8 +2539,10 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             shortname = entry.get("ShortName", "")
             key = os.path.splitext(shortname)[0]
             subtitle = self.subtitles.get(key, "")
-            
-            mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)", f"{entry.get('Id', '')}.wem")
+            if lang != "SFX":
+                mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", lang, f"{entry.get('Id', '')}.wem")
+            else:
+                mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{entry.get('Id', '')}.wem")
             has_mod_audio = os.path.exists(mod_wem_path)
             
             if filter_type == 1 and not subtitle:  # With subtitles
@@ -2599,7 +2600,10 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 subtitle = self.subtitles.get(key, "")
                 
                 mod_status = ""
-                mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)", f"{entry.get('Id', '')}.wem")
+                if lang != "SFX":
+                    mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", lang, f"{entry.get('Id', '')}.wem")
+                else:
+                    mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{entry.get('Id', '')}.wem")
                 if os.path.exists(mod_wem_path):
                     mod_status = "♪"
                 
@@ -2657,7 +2661,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         widgets = self.tab_widgets[lang]
         tree = widgets["tree"]
         items = tree.selectedItems()
-        
+        print(items)
         if not items:
             widgets["play_mod_btn"].hide()  
             return
@@ -2695,10 +2699,15 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         widgets["info_labels"]["source"].setText(entry.get("Source", ""))
         widgets["info_labels"]["duration"].setText("Loading...")
         widgets["info_labels"]["mod_duration"].setText("Loading...")
-        widgets["duration_warning"].hide()
+        widgets["info_labels"]["size"].setText("Loading...")
+        widgets["info_labels"]["mod_size"].setText("Loading...")
+        widgets["size_warning"].hide()
         
 
-        mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)", f"{entry.get('Id', '')}.wem")
+        if lang != "SFX":
+            mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", lang, f"{entry.get('Id', '')}.wem")
+        else:
+            mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{entry.get('Id', '')}.wem")
         if os.path.exists(mod_wem_path):
             widgets["play_mod_btn"].show()
         else:
@@ -2706,6 +2715,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         
 
         self.get_file_durations(entry.get("Id", ""), lang, widgets)
+        self.get_file_size(entry.get("Id", ""), lang, widgets)
 
     def get_file_durations(self, file_id, lang, widgets):
         """Get the duration of both original and mod WEM files"""
@@ -2726,7 +2736,10 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             widgets["info_labels"]["duration"].setText("N/A")
             
 
-        mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)", f"{file_id}.wem")
+        if lang != "SFX":
+            mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", lang, f"{file_id}.wem")
+        else:
+            mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{file_id}.wem")
         self.mod_duration = 0
         
         if os.path.exists(mod_wem_path):
@@ -2737,14 +2750,11 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 seconds = (duration % 60000) / 1000.0
                 widgets["info_labels"]["mod_duration"].setText(f"{minutes:02d}:{seconds:05.2f}")
                 
-                if self.original_duration > 0 and self.mod_duration > self.original_duration:
-                    widgets["duration_warning"].setText("⚠ MOD DURATION EXCEEDS ORIGINAL!")
-                    widgets["duration_warning"].show()
             else:
                 widgets["info_labels"]["mod_duration"].setText("Unknown")
         else:
             widgets["info_labels"]["mod_duration"].setText("N/A")
-
+    
     def get_wem_duration(self, wem_path):
         """Get the duration of a WEM file in milliseconds"""
         try:
@@ -2758,18 +2768,55 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             )
             
             if result.returncode == 0:
-
+                samples = None
+                sample_rate = 48000  # default
+                
                 for line in result.stdout.split('\n'):
                     if "stream total samples:" in line:
                         samples = int(line.split(':')[1].strip().split()[0])
-
-                        duration_ms = int((samples / 48000) * 1000)
-                        return duration_ms
-                        
+                    elif "sample rate:" in line:
+                        sample_rate = int(line.split(':')[1].strip().split()[0])
+                
+                if samples:
+                    duration_ms = int((samples / sample_rate) * 1000)
+                    return duration_ms
+                    
         except Exception as e:
             DEBUG.log(f"Error getting duration: {e}", "ERROR")
             
-        return 0
+        return 0   
+    def get_file_size(self, file_id, lang, widgets):
+        """Get the size of both original and mod WEM files"""
+        # Get original file size
+        wem_path = os.path.join(self.wem_root, lang, f"{file_id}.wem")
+        if os.path.exists(wem_path):
+            self.original_size = os.path.getsize(wem_path)
+            widgets["info_labels"]["size"].setText(f"{self.original_size / 1024:.1f} KB")
+        else:
+            self.original_size = 0
+            widgets["info_labels"]["size"].setText("N/A")
+            
+        # Get mod file size
+        if lang != "SFX":
+            mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", lang, f"{file_id}.wem")
+        else:
+            mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{file_id}.wem")
+        
+        if os.path.exists(mod_wem_path):
+            self.mod_size = os.path.getsize(mod_wem_path)
+            widgets["info_labels"]["mod_size"].setText(f"{self.mod_size / 1024:.1f} KB")
+            
+            
+            if self.original_size > 0 and self.mod_size < self.original_size:
+                widgets["size_warning"].setText("⚠ Mod file size is smaller than original!")
+                widgets["size_warning"].show()
+            else:
+                widgets["size_warning"].hide()
+        else:
+            self.mod_size = 0
+            widgets["info_labels"]["mod_size"].setText("N/A")
+            widgets["size_warning"].hide()
+        
 
     def play_current(self, play_mod=False):
         current_lang = self.get_current_language()
@@ -2792,26 +2839,27 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         
         if play_mod:
             # Try to play mod file
-            wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)", f"{id_}.wem")
+            if current_lang != "SFX":
+                wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", current_lang, f"{entry.get('Id', '')}.wem")
+            else:
+                wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{entry.get('Id', '')}.wem")
             if not os.path.exists(wem_path):
                 self.status_bar.showMessage("Mod audio not found", 3000)
                 return
             self.is_playing_mod = True
         else:
-            # Play original file
             wem_path = os.path.join(self.wem_root, current_lang, f"{id_}.wem")
             if not os.path.exists(wem_path):
                 self.status_bar.showMessage(f"File not found: {wem_path}", 3000)
                 return
             self.is_playing_mod = False
             
-
         source_type = "MOD" if play_mod else "Original"
         self.status_bar.showMessage(f"Converting {source_type} to WAV...")
         QtWidgets.QApplication.processEvents()
         
         temp_wav = os.path.join(tempfile.gettempdir(), f"wem_temp_{id_}_{source_type}.wav")
-        
+        print(wem_path, temp_wav, current_lang)
         thread = threading.Thread(target=self._convert_and_play, args=(wem_path, temp_wav, current_lang))
         thread.start()
 
@@ -3273,13 +3321,13 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 
                 progress.set_progress(
                     int((i / len(subtitle_files_to_update)) * 100),
-                    f"Processing {file_info['filename']} ({file_info['language']})..."
+                    f"Processing {file_info['filename']} ({current_language})..."
                 )
                 
                 # Create target directory structure
                 target_dir = os.path.join(
                     self.mod_p_path, "OPP", "Content", 
-                    "Localization", file_info['category'], file_info['language']
+                    "Localization", file_info['category'], current_language
                 )
                 os.makedirs(target_dir, exist_ok=True)
                 
@@ -3359,7 +3407,10 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         original_btn = msg.addButton("Original", QtWidgets.QMessageBox.ActionRole)
         mod_btn = None
         
-        mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)", f"{id_}.wem")
+        if current_lang != "SFX":
+            mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", current_lang, f"{entry.get('Id', '')}.wem")
+        else:
+            mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{entry.get('Id', '')}.wem")
         if os.path.exists(mod_wem_path):
             mod_btn = msg.addButton("Mod", QtWidgets.QMessageBox.ActionRole)
             
@@ -3559,7 +3610,10 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         
             entry = items[0].data(0, QtCore.Qt.UserRole)
             if entry:
-                mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "English(US)", f"{entry.get('Id', '')}.wem")
+                if lang != "SFX":
+                    mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", lang, f"{entry.get('Id', '')}.wem")
+                else:
+                    mod_wem_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{entry.get('Id', '')}.wem")
                 if os.path.exists(mod_wem_path):
                     play_mod_action = menu.addAction("▶ Play Mod")
                     play_mod_action.triggered.connect(lambda: self.play_current(play_mod=True))
@@ -4199,15 +4253,15 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         time_label.setAlignment(QtCore.Qt.AlignCenter)
         
 
-        duration_warning = QtWidgets.QLabel()
-        duration_warning.setStyleSheet("color: red; font-weight: bold;")
-        duration_warning.hide()
+        size_warning = QtWidgets.QLabel()
+        size_warning.setStyleSheet("color: red; font-weight: bold;")
+        size_warning.hide()
         
         controls_layout.addWidget(play_btn)
         controls_layout.addWidget(play_mod_btn)
         controls_layout.addWidget(stop_btn)
         controls_layout.addWidget(time_label)
-        controls_layout.addWidget(duration_warning)
+        controls_layout.addWidget(size_warning)
         controls_layout.addStretch()
         
         player_layout.addWidget(controls_widget)
@@ -4241,7 +4295,9 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             "path": QtWidgets.QLabel(),
             "source": QtWidgets.QLabel(),
             "duration": QtWidgets.QLabel(),
-            "mod_duration": QtWidgets.QLabel()
+            "mod_duration": QtWidgets.QLabel(),
+            "size": QtWidgets.QLabel(),
+            "mod_size": QtWidgets.QLabel()
         }
         
         info_layout.addRow("ID:", info_labels["id"])
@@ -4250,7 +4306,8 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         info_layout.addRow("Source:", info_labels["source"])
         info_layout.addRow("Original Duration:", info_labels["duration"])
         info_layout.addRow("Mod Duration:", info_labels["mod_duration"])
-        
+        info_layout.addRow("Original Size:", info_labels["size"])
+        info_layout.addRow("Mod Size:", info_labels["mod_size"])
         details_layout.addWidget(info_group)
         details_layout.addStretch()
         
@@ -4274,7 +4331,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             "play_btn": play_btn,
             "play_mod_btn": play_mod_btn,
             "stop_btn": stop_btn,
-            "duration_warning": duration_warning
+            "size_warning": size_warning
         }
         
         self.tabs.addTab(tab, f"{lang} ({len(self.entries_by_lang.get(lang, []))})")
