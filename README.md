@@ -39,9 +39,8 @@
 <summary><b>🔧 Click to expand audio features</b></summary>
 
 - **🎧 WEM File Support** - Native handling of Wwise audio files used in Outlast Trials
-- **▶️ Real-time Playback** - Built-in audio player with timeline scrubbing and controls
+- **▶️ Real-time Playback** - Built-in audio player
 - **⚡ Batch Processing** - Convert and process multiple audio files simultaneously
-- **📊 Duration Analysis** - Smart comparison tools to prevent audio cutoffs in-game
 - **🔄 Format Conversion** - Seamless bidirectional conversion between WEM ↔ WAV
 
 </details>
@@ -52,7 +51,7 @@
 
 - **🌐 Multi-language Support** - Full support for EN, RU, FR, DE, ES, JP, KR, CN, and more
 - **📄 Locres File Handling** - Native support for Unreal Engine localization files
-- **📦 Batch Export** - Export all subtitle modifications with one command
+- **📦 Batch Export** - Export all subtitle modifications with one click
 
 </details>
 
@@ -116,10 +115,6 @@ python outlasttrials_audioeditor.py
 <td>Outlast Trials (Steam version)</td>
 </tr>
 <tr>
-<td><b>Audio Editor</b></td>
-<td><a href="https://www.audacityteam.org/download/">Audacity</a> (free)</td>
-</tr>
-<tr>
 <td><b>Audio Engine</b></td>
 <td><a href="https://www.audiokinetic.com/download/">Wwise 2019.1.6.7110</a> (free registration required)</td>
 </tr>
@@ -128,8 +123,8 @@ python outlasttrials_audioeditor.py
 ---
 
 ## 📚 Complete Usage Guide
-
-### 🎯 **Subtitle Editing Workflow**
+Official Tutorial: https://www.youtube.com/watch?v=HDV8ocAPtzo
+### 🎯 **Localization Editing Workflow**
 
 <div align="center">
 
@@ -138,8 +133,8 @@ python outlasttrials_audioeditor.py
 #### **Step 1: Open the Editor** 
 ```
 🌍 Choose your subtitles language in settings
-🎵 Select any audio file from the main list
-⌨️ Press F2 or double-click to open subtitle editor
+🎵 Select any audio file from the main list or use Localization Editor tab
+⌨️ Press F2 or double-click to open localization editor
 ```
 
 #### **Step 2: Edit Content**
@@ -150,46 +145,24 @@ python outlasttrials_audioeditor.py
 #### **Step 3: Export & Deploy**
 ```
 💾 Save changes with Ctrl+S
-📦 Go to Tools → Export Subtitles for Game
+📦 Go to Converter → Localization Exporter → Export Subtitles for Game
 🚀 Use Tools → Compile Mod to create the final .pak file
 🎮 Deploy with Tools → Deploy & Run (F5) and test in-game
 ```
 
-### 🎵 **Professional Audio Editing Pipeline**
+### 🎵 **Audio Editing Pipeline**
 
 <div align="center">
 
 </div>
 
-#### **🎧 Phase 1: Audio Preparation in Audacity**
+#### **🎧 Phase 1: Audio Preparation**
 
-<div align="center">
-<table>
-<tr>
-<td align="center">
-<h4>⚠️ CRITICAL RULE</h4>
-<b>Each new audio file must be created in different Audacity projects.</i>
-</tr>
-</table>
-</div>
 
-**Audacity Setup & Editing:**
-```bash
-🎵 Import your source audio file into Audacity
-⏱️ Check original Outlast Trials audio duration first
-✂️ Edit, trim, and perfect your audio content
-🔊 Adjust volume levels to match game standards
-🔇 Apply noise reduction and enhancement filters
-📐 Ensure final length ≤ original duration
+#### **Step 1: Make your sound** 
 ```
-
-**Critical Export Settings:**
-```yaml
-File Format: WAV (Microsoft)
-Sample Rate: 48000 Hz ⚡ REQUIRED
-Encoding: Signed 16-bit PCM
-Channels: Mono ⚡ REQUIRED  
-Filename: EXACT match to original ⚡ CASE-SENSITIVE
+📦 Make or find sound and export it in WAV format. Make Sure that size is not too big
+🌍 Rename the file with the name of the sound you want to replace.
 ```
 
 **Example Filenames:**
@@ -201,43 +174,28 @@ Filename: EXACT match to original ⚡ CASE-SENSITIVE
 ✅ VO_Player_Female_Scream_Death03.wav
 ```
 
-#### **🎛️ Phase 2: Wwise Conversion Process**
+#### **🎛️ Phase 2: Conversion Process**
 
-**Project Setup:**
+**Wav adding:**
 ```bash
-🔧 Launch Wwise 2019.1.6.7110
-📁 Create new project or open existing
-🎵 Import your prepared WAV file
+📦 Go to Converter → WAV to WEM Converter → Fill all Path Configuration
+🚀 Press Add All WAV Files
 ```
-
-**Conversion Configuration:**
-```yaml
-Conversion Method: Mono 48000
-Format: Vorbis ⚡ REQUIRED
-Quality: 3 (optimal balance) 
-Options: ✅ Insert filename marker ⚡ CRITICAL
-```
-<img src="https://i.imgur.com/5QXSoQU.png" width="750" style="border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);"/>
 
 **Generate WEM File:**
 ```
+📁 Choose Conversion Mode
+
+1. Strict Mode - Standard conversion mode. If the file is too large, an error will be thrown. Use this mode when you want full control over your audio files.
+
+2. Adaptive Mode - Automatically resamples audio to lower sample rates if the file is too large. The system will find the optimal sample rate to match the target file size. Useful for batch processing when exact audio quality is less critical.
+
 🔄 Click "Convert" to process audio
-📁 Locate WEM file in project folder
+⏳ Wait for completion
 ✅ Verify successful generation
 ```
 
-#### **⚙️ Phase 3: AudioEditor Integration**
-
-**Import & Process:**
-```bash
-📂 Open "Convert" tab in AudioEditor
-🔍 Browse to your Wwise project folder
-⚡ Click "Process WEM files"
-⏳ Wait for completion
-✅ Verify in processing log
-```
-
-#### **🚀 Phase 4: Final Deployment**
+#### **🚀 Phase 3: Final Deployment**
 
 **Compile Mod:**
 ```bash
@@ -302,83 +260,6 @@ Options: ✅ Insert filename marker ⚡ CRITICAL
 </tr>
 
 </table>
-
----
-
-## ⚠️ Important Notes & Best Practices
-
-<div align="center">
-
-</div>
-
-<table align="center">
-<tr>
-<td align="center" width="50%">
-<h4>⏱️ Duration Constraints</h4>
-<b>New audio MUST be ≤ original length</b><br>
-Longer audio will be cut off mid-sentence in-game
-</td>
-<td align="center" width="50%">
-<h4>📝 Filename Accuracy</h4>
-<b>Exact case-sensitive matching required</b><br>
-Any typo will prevent the mod from working
-</td>
-</tr>
-<tr>
-<td align="center">
-<h4>🎵 Audio Quality</h4>
-<b>Use new Audacity projects for each audio</b><br>
-Prevents cross-contamination and ensures clean output
-</td>
-<td align="center">
-<h4>🔧 Wwise Version</h4>
-<b>Must use Wwise 2019.1.6.7110</b><br>
-Other versions may produce incompatible files
-</td>
-</tr>
-</table>
-
----
-
-## 🛠️ Troubleshooting Center
-
-<div align="center">
-</div>
-
-<details>
-<summary><b>🔊 Audio Issues</b></summary>
-
-| ❌ **Problem** | 🔍 **Cause** | ✅ **Solution** |
-|---|---|---|
-| Audio cuts off in-game | New audio too long | Reduce duration in Audacity to match original |
-| No sound plays at all | Filename mismatch | Check exact spelling and case sensitivity |
-| Poor/distorted quality | Low Vorbis quality setting | Increase quality to 3-5 in Wwise conversion |
-| Audio crackling/static | Sample rate mismatch | Ensure 48000 Hz in both Audacity and Wwise |
-| Some audio work, others don't | Previous Audacity Projects | Try to remake wav audio |
-</details>
-
-<details>
-<summary><b>🎮 Game Integration Issues</b></summary>
-
-| ❌ **Problem** | 🔍 **Cause** | ✅ **Solution** |
-|---|---|---|
-| Mod doesn't load | Incorrect file structure | Verify .pak contents match expected folders |
-| Game crashes on startup | Corrupted WEM file | Re-export from Wwise with proper settings |
-
-
-</details>
-
-<details>
-<summary><b>⚙️ Application Issues</b></summary>
-
-| ❌ **Problem** | 🔍 **Cause** | ✅ **Solution** |
-|---|---|---|
-| Can't find game folder | Incorrect path settings | Update game path in Settings (Ctrl+,) |
-| Wwise conversion fails | Missing or wrong Wwise version | Install Wwise 2019.1.6.7110 exactly |
-| Subtitle editor won't open | Corrupted localization file | Reset subtitle files or reinstall |
-| F5 deploy doesn't work | Missing game permissions | Run as administrator if needed |
-
-</details>
 
 ---
 
