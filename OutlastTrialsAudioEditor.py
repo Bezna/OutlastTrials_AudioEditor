@@ -48,7 +48,7 @@ if sys.platform == "win32":
 else:
     startupinfo = None
     CREATE_NO_WINDOW = 0
-current_version = "v1.1.1"
+current_version = "v1.1.2"
 
 TRANSLATIONS = {
     "en": {
@@ -353,7 +353,7 @@ TRANSLATIONS = {
         "python_lib": "Python Standard Library",
         "software_disclaimer": "This software is provided \"as is\" without warranty of any kind. Use at your own risk.",
         "license_agreement": "License Agreement",
-        "copyright_notice": "Copyright (c) 2025 OutlastTrials AudioEditor",
+        "copyright_notice": "Copyright (c) 2026 OutlastTrials AudioEditor",
         "mit_license_text": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
         
         # === ГОРЯЧИЕ КЛАВИШИ ===
@@ -1142,7 +1142,7 @@ TRANSLATIONS = {
         "python_lib": "Стандартная библиотека Python",
         "software_disclaimer": "Это программное обеспечение предоставляется \"как есть\" без каких-либо гарантий. Используйте на свой страх и риск.",
         "license_agreement": "Лицензионное соглашение",
-        "copyright_notice": "Copyright (c) 2025 OutlastTrials AudioEditor",
+        "copyright_notice": "Copyright (c) 2026 OutlastTrials AudioEditor",
         "mit_license_text": "Настоящим предоставляется бесплатное разрешение любому лицу, получившему копию данного программного обеспечения и связанных с ним файлов документации (\"Программное обеспечение\"), на использование Программного обеспечения без ограничений, включая неограниченное право на использование, копирование, изменение, слияние, публикацию, распространение, сублицензирование и/или продажу копий Программного обеспечения, а также лицам, которым предоставляется данное Программное обеспечение, при соблюдении следующих условий:\n\nВышеуказанное уведомление об авторском праве и данное уведомление о разрешении должны быть включены во все копии или существенные части данного Программного обеспечения.\n\nДАННОЕ ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ \"КАК ЕСТЬ\", БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ, ЯВНЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ, ВКЛЮЧАЯ ГАРАНТИИ ТОВАРНОЙ ПРИГОДНОСТИ, СООТВЕТСТВИЯ ПО ЕГО КОНКРЕТНОМУ НАЗНАЧЕНИЮ И ОТСУТСТВИЯ НАРУШЕНИЙ, НО НЕ ОГРАНИЧИВАЯСЬ ИМИ. НИ В КАКОМ СЛУЧАЕ АВТОРЫ ИЛИ ПРАВООБЛАДАТЕЛИ НЕ НЕСУТ ОТВЕТСТВЕННОСТИ ПО КАКИМ-ЛИБО ИСКАМ, ЗА УЩЕРБ ИЛИ ПО ИНОЙ ОТВЕТСТВЕННОСТИ, БУДЬ ТО В ДЕЙСТВИИ ПО ДОГОВОРУ, ДЕЛИКТУ ИЛИ ИНОМУ, ВЫТЕКАЮЩИХ ИЗ, СВЯЗАННЫХ С ИЛИ В СВЯЗИ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ ИЛИ ИСПОЛЬЗОВАНИЕМ ИЛИ ИНЫМИ ДЕЙСТВИЯМИ В ПРОГРАММНОМ ОБЕСПЕЧЕНИИ.",
         
         # === ГОРЯЧИЕ КЛАВИШИ ===
@@ -1926,7 +1926,7 @@ TRANSLATIONS = {
         "python_lib": "Standardowa biblioteka Python",
         "software_disclaimer": "To oprogramowanie jest dostarczane \"jak jest\" bez żadnych gwarancji. Używaj na własne ryzyko.",
         "license_agreement": "Umowa licencyjna",
-        "copyright_notice": "Copyright (c) 2025 OutlastTrials AudioEditor",
+        "copyright_notice": "Copyright (c) 2026 OutlastTrials AudioEditor",
         "mit_license_text": "Niniejszym udziela się bezpłatnego zezwolenia każdej osobie uzyskującej kopię tego oprogramowania i powiązanych plików dokumentacji (\"Oprogramowanie\") na nieograniczone korzystanie z Oprogramowania, w tym bez ograniczeń prawami do używania, kopiowania, modyfikowania, łączenia, publikowania, dystrybucji, sublicencjonowania i/lub sprzedaży kopii Oprogramowania, oraz zezwalania osobom, którym Oprogramowanie jest dostarczone, na takie działania, pod warunkiem spełnienia następujących warunków:\n\nPowyższa informacja o prawach autorskich i niniejsza informacja o zezwoleniu muszą być zawarte we wszystkich kopiach lub istotnych częściach Oprogramowania.\n\nOPROGRAMOWANIE JEST DOSTARCZANE \"JAK JEST\", BEZ JAKICHKOLWIEK GWARANCJI, WYRAŹNYCH LUB DOROZUMIANYCH, W TYM GWARANCJI PRZYDATNOŚCI HANDLOWEJ, PRZYDATNOŚCI DO OKREŚLONEGO CELU I NIENARUSZANIA PRAW. W ŻADNYM PRZYPADKU AUTORZY LUB POSIADACZE PRAW AUTORSKICH NIE PONOSZĄ ODPOWIEDZIALNOŚCI ZA JAKIEKOLWIEK ROSZCZENIA, SZKODY LUB INNE ZOBOWIĄZANIA, CZY TO W RAMACH UMOWY, DELIKTU CZY W INNY SPOSÓB, WYNIKAJĄCE Z LUB W ZWIĄZKU Z OPROGRAMOWANIEM LUB UŻYTKOWANIEM LUB INNYMI DZIAŁANIAMI W OPROGRAMOWANIU.",
         
         # === SKRÓTY KLAWISZOWE ===
@@ -2387,6 +2387,703 @@ TRANSLATIONS = {
         "move_complete_restart_note": "\n\nZaleca się ponowne uruchomienie aplikacji, aby zmiany w pełni zaczęły obowiązywać.",
         "outdated_mod_structure_title": "Przestarzała struktura moda",
         "outdated_mod_structure_msg": "Importowany mod używa starej struktury plików (sprzed aktualizacji).\n\nGra wymaga teraz, aby pliki audio znajdowały się w podfolderze 'Media'.\nCzy chcesz automatycznie zreorganizować pliki do nowego formatu?"
+    },
+    "es-MX": {
+        # === ELEMENTOS PRINCIPALES DE LA INTERFAZ ===
+        "app_title": "Editor de Audio de Outlast Trials",
+        "file_menu": "Archivo",
+        "edit_menu": "Editar",
+        "tools_menu": "Herramientas",
+        "help_menu": "Ayuda",
+        "save_subtitles": "Guardar Subtítulos",
+        "export_subtitles": "Exportar Subtítulos...",
+        "import_subtitles": "Importar Subtítulos...",
+        "import_custom_subtitles": "Importar Subtítulos Personalizados (Beta)...",
+        "exit": "Salir",
+        "revert_to_original": "Revertir a Original",
+        "find_replace": "Buscar y Reemplazar...",
+        "compile_mod": "Compilar Mod",
+        "deploy_and_run": "Desplegar Mod y Ejecutar Juego",
+        "show_debug": "Mostrar Consola de Depuración",
+        "settings": "Configuración...",
+        "about": "Acerca de",
+        
+        # === FILTROS Y ORDENAMIENTO ===
+        "filter": "Filtro:",
+        "sort": "Ordenar:",
+        "all_files": "Todos los Archivos",
+        "with_subtitles": "Con Subtítulos",
+        "without_subtitles": "Sin Subtítulos",
+        "modified": "Modificado",
+        "modded": "Modificado (Audio)",
+        "name_a_z": "Nombre (A-Z)",
+        "name_z_a": "Nombre (Z-A)",
+        "id_asc": "ID ↑",
+        "id_desc": "ID ↓",
+        "recent_first": "Más Recientes Primero",
+        
+        # === PALABRAS BÁSICAS ===
+        "name": "Nombre",
+        "id": "ID",
+        "subtitle": "Subtítulo",
+        "status": "Estado",
+        "mod": "MOD",
+        "path": "Ruta",
+        "source": "Fuente",
+        "original": "Original",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "browse": "Examinar...",
+        "confirmation": "Confirmación",
+        "error": "Error",
+        "warning": "Advertencia",
+        "success": "Éxito",
+        "info": "Información",
+        "close": "Cerrar",
+        "ready": "Listo",
+        "waiting": "Esperando...",
+        "done": "Completado",
+        "error_status": "Error",
+        "size_warning": "Advertencia de Tamaño",
+        "loading": "Cargando...",
+        "processing": "Procesando...",
+        "converting": "Convirtiendo...",
+        "complete": "Completo",
+        "stop": "Detener",
+        "clear": "Limpiar",
+        "language": "Idioma",
+        
+        # === DIÁLOGOS Y MENSAJES ===
+        "edit_subtitle": "Editar Subtítulo",
+        "subtitle_preview": "Vista Previa de Subtítulo",
+        "file_info": "Información del Archivo",
+        "select_game_path": "Seleccionar carpeta raíz del juego",
+        "game_path_saved": "Ruta del juego guardada",
+        "mod_deployed": "¡Mod desplegado exitosamente!",
+        "game_launching": "Iniciando juego...",
+        "no_game_path": "Por favor establece la ruta del juego en configuración primero",
+        "no_changes": "Sin Cambios",
+        "no_modified_subtitles": "No hay subtítulos modificados para exportar",
+        "import_error": "Error de Importación",
+        "export_error": "Error de Exportación",
+        "save_error": "Error al Guardar",
+        "file_not_found": "Archivo no encontrado",
+        "conversion_stopped": "Conversión detenida",
+        "deployment_complete": "Despliegue completo",
+        "characters": "Caracteres:",
+        
+        # === CONFLICTOS DE SUBTÍTULOS ===
+        "conflict_detected": "Conflicto de Subtítulos Detectado",
+        "conflict_message": "Las siguientes claves ya tienen subtítulos:\n\n{conflicts}\n\n¿Qué subtítulos te gustaría conservar?",
+        "use_existing": "Mantener Existentes",
+        "use_new": "Usar Nuevos",
+        "merge_all": "Combinar Todos (Mantener Existentes)",
+        
+        # === CONVERTIDOR WAV TO WEM ===
+        "wav_to_wem_converter": "Convertidor de Audio a WEM",
+        "conversion_mode": "Modo de Conversión (Solo Modo de Coincidencia de Tamaño)",
+        "strict_mode": "Modo Estricto",
+        "adaptive_mode": "Modo Adaptativo",
+        "strict_mode_desc": "❌ Falla si es demasiado grande",
+        "adaptive_mode_desc": "✅ Ajusta calidad automáticamente",
+        "path_configuration": "Configuración de Rutas",
+        "wwise_path": "Wwise:",
+        "project_path": "Proyecto:",
+        "wav_path": "Audio:",
+        "files_for_conversion": "Archivos para Conversión",
+        "add_all_wav": "Agregar Todos los Archivos de Audio",
+        "convert": "Convertir",
+        "files_ready": "Archivos listos:",
+        "wav_file": "Archivo de Audio",
+        "target_wem": "WEM Objetivo",
+        "target_size": "Tamaño Objetivo",
+        "files_ready_count": "Archivos listos: {count}",
+        "confirm_clear": "¿Limpiar todos los archivos?",
+        
+        # === CONVERSIÓN Y REGISTROS ===
+        "conversion_complete": "Conversión Completa",
+        "conversion_logs": "Registros de Conversión",
+        "clear_logs": "Limpiar Registros",
+        "save_logs": "Guardar Registros",
+        "logs_cleared": "Registros limpiados...",
+        "logs_saved": "Registros guardados",
+        "error_saving_logs": "Error al guardar registros",
+        "starting_conversion": "Iniciando conversión en modo {mode}...",
+        "file_status": "Archivo {current}/{total}: {name}",
+        "attempting": "intento {attempts} (Conversión={value})",
+        "testing_sample_rate": "Probando {rate}Hz...",
+        "resampled_to": "Remuestreado a {rate}Hz",
+        "results_summary": "✅ ¡Conversión y despliegue completos!\n\nExitosos: {successful}\nErrores: {failed}\nAdvertencias de tamaño: {warnings}\n\nArchivos desplegados a MOD_P\nVer pestaña 'Registros' para resultados detallados",
+        "add_files_warning": "¡Por favor agrega archivos para conversión primero!",
+        
+        # === INSTRUCCIONES ===
+        "converter_instructions": "Convertidor de Audio a WEM:\n1) Establece ruta de Wwise 2) Elige carpeta temporal del proyecto 3) Selecciona carpeta de Audio 4) Agrega archivos 5) Convierte",
+        "converter_instructions2": "Convertidor WEM:\n1) Establece ruta del proyecto Wwise 2) Convierte a mod",
+        
+        # === RUTAS Y MARCADORES DE POSICIÓN ===
+        "wwise_path_placeholder": "Ruta de instalación de Wwise... (Ejemplo: D:/Audiokinetic/Wwise2019.1.6.7110)",
+        "project_path_placeholder": "Ruta de Proyecto Nuevo/Viejo... (Ejemplo: D:/ProyectosEjemplo/MiNuevoProyecto) P.D. Puede estar vacío",
+        "wav_folder_placeholder": "Carpeta de archivos de audio...",
+        
+        # === BÚSQUEDA Y PROCESAMIENTO ===
+        "select_wav_folder": "¡Por favor selecciona la carpeta de Audio primero!",
+        "wems_folder_not_found": "Carpeta Wems no encontrada",
+        "no_wav_files": "¡No se encontraron archivos de Audio en la carpeta!",
+        "search_complete": "Búsqueda completa",
+        "auto_search_result": "Coincidencias encontradas automáticamente: {matched} de {total}",
+        "target_language": "Idioma objetivo para archivos de voz",
+        "no_matches_found": "No se encontraron coincidencias para",
+        
+        # === EXPORTACIÓN DE SUBTÍTULOS ===
+        "cleanup_mod_subtitles": "Limpiar Subtítulos de MOD_P",
+        "export_subtitles_for_game": "Exportar Subtítulos para el Juego",
+        "subtitle_export_ready": "Listo para exportar subtítulos...",
+        "deploying_files": "Desplegando archivos a la estructura del juego...",
+        "deployment_error": "Error de despliegue",
+        "conversion_failed": "Conversión fallida",
+        "all_files_failed": "Todos los archivos fallaron",
+        "see_logs_for_details": "Ver pestaña 'Registros' para detalles",
+        "localization_editor": "Editor de Localización",
+        
+        # === PROCESADOR WEM ===
+        "wem_processor_warning": "⚠️ Procesador WEM (No Recomendado)",
+        "wem_processor_desc": "Herramienta heredada para procesar archivos WEM listos.",
+        "wem_processor_recommendation": "Usa 'Audio a WEM' para principiantes.",
+        
+        # === EXPORTADOR DE LOCALIZACIÓN ===
+        "localization_exporter": "Exportador de Localización",
+        "export_modified_subtitles": "Exportar Subtítulos Modificados",
+        "localization_editor_desc": "Edita localización directamente. Usa la barra de búsqueda global arriba para filtrar resultados.",
+        
+        # === LIMPIEZA DE SUBTÍTULOS ===
+        "cleanup_subtitles_found": "Se encontraron {count} archivos de subtítulos en MOD_P",
+        "select_files_to_delete": "Por favor selecciona archivos para eliminar",
+        "confirm_deletion": "Confirmar Eliminación",
+        "delete_files_warning": "¿Estás seguro de que quieres eliminar {count} archivos de subtítulos?\n\n¡Esta acción no se puede deshacer!",
+        "cleanup_complete": "Limpieza Completa",
+        "cleanup_with_errors": "Limpieza Completa con Errores",
+        "files_deleted_successfully": "Se eliminaron exitosamente {count} archivos de subtítulos de MOD_P",
+        "files_deleted_with_errors": "Se eliminaron {count} archivos exitosamente\n{errors} archivos tuvieron errores\n\nRevisa el registro de estado para detalles",
+        "no_localization_found": "No se Encontraron Archivos",
+        "no_localization_message": "No se encontró carpeta de localización en:\n{path}",
+        "no_subtitle_files": "No se encontraron archivos de subtítulos en:\n{path}",
+        "select_all": "Seleccionar Todo",
+        "select_none": "Deseleccionar Todo",
+        "quick_select": "Selección rápida:",
+        "select_by_language": "Seleccionar por idioma...",
+        "delete_selected": "Eliminar Seleccionados",
+        "no_selection": "Sin Selección",
+        
+        # === INFORMACIÓN DE AUDIO ===
+        "audio_comparison": "Comparación de Audio",
+        "original_audio": "Audio Original",
+        "modified_audio": "Audio Modificado",
+        "duration": "Duración",
+        "size": "Tamaño",
+        "sample_rate": "Tasa de Muestreo",
+        "bitrate": "Tasa de Bits",
+        "channels": "Canales",
+        "audio_markers": "Marcadores de Audio",
+        "original_markers": "Marcadores Originales",
+        "modified_markers": "Marcadores Modificados",
+        "bnk_size_label": "Tamaño BNK",
+        "in_game_effects_label": "Efectos en Juego",
+        "last_modified_label": "Última Modificación",
+        "fix_bnk_size_btn": "🔧 Arreglar Tamaño BNK",
+        
+        # === ACCIONES DE AUDIO ===
+        "play_original": "▶️ Reproducir Original",
+        "play_modified": "▶️ Reproducir Modificado",
+        "replace_audio": "🔄 Reemplazar Audio...",
+        "trim_audio": "✂️ Recortar Audio...",
+        "adjust_volume": "🔊 Ajustar Volumen...",
+        "delete_mod_audio": "🗑️ Eliminar Audio Modificado",
+        "restore_from_backup": "🔄 Restaurar desde Respaldo",
+        
+        # === TOOLTIPS DE AUDIO ===
+        "play_original_tooltip": "Reproducir audio original del juego",
+        "play_modified_tooltip": "Reproducir audio modificado",
+        "replace_audio_tooltip": "Reemplazar con nuevo archivo de audio",
+        "trim_audio_tooltip": "Recortar audio a duración específica",
+        "adjust_volume_tooltip": "Ajustar volumen del audio",
+        "delete_mod_audio_tooltip": "Eliminar audio modificado y revertir a original",
+        "restore_from_backup_tooltip": "Restaurar versión anterior del audio modificado",
+        "trim_original_audio_title": "✂️ Recortar Audio Original...",
+        
+        # === AJUSTE DE VOLUMEN ===
+        "adjust_volume_title": "Ajustar Volumen",
+        "volume_adjustment": "Ajuste de Volumen:",
+        "preview_volume": "Vista Previa",
+        "current_volume": "Volumen Actual:",
+        "new_volume": "Nuevo Volumen:",
+        "volume_db": "{value} dB",
+        "applying_volume": "Aplicando ajuste de volumen...",
+        "volume_applied": "Volumen ajustado exitosamente",
+        "volume_error": "Error al ajustar volumen",
+        
+        # === RECORTE DE AUDIO ===
+        "trim_audio_title": "Recortar Audio",
+        "start_time": "Tiempo de Inicio:",
+        "end_time": "Tiempo Final:",
+        "total_duration": "Duración Total:",
+        "new_duration": "Nueva Duración:",
+        "trim_and_save": "Recortar y Guardar",
+        "invalid_times": "Tiempos de recorte inválidos",
+        "trimming_audio": "Recortando audio...",
+        "trim_successful": "Audio recortado exitosamente",
+        "trim_error": "Error al recortar audio",
+        
+        # === COMPILACIÓN DE MOD ===
+        "compile_mod_title": "Compilar Mod",
+        "compile_mod_message": "¿Compilar mod actual en archivo .pak?",
+        "compiling": "Compilando...",
+        "compile_success": "Mod compilado exitosamente",
+        "compile_error": "Error al compilar mod",
+        
+        # === DESPLIEGUE DE MOD ===
+        "deploy_mod_title": "Desplegar Mod",
+        "deploy_and_run_title": "Desplegar y Ejecutar",
+        "deploying_mod": "Desplegando mod...",
+        "mod_deployed_success": "¡Mod desplegado exitosamente!",
+        "deploy_error": "Error al desplegar mod",
+        
+        # === ACTUALIZADOR DE RECURSOS ===
+        "resource_updater": "Actualizador de Recursos",
+        "update_resources": "Actualizar Recursos del Juego",
+        "select_pak_file": "Seleccionar Archivo .pak del Juego",
+        "extract_audio": "Extraer Audio",
+        "extract_localization": "Extraer Localización",
+        "start_extraction": "Iniciar Extracción",
+        "extraction_complete": "Extracción completa",
+        "extraction_error": "Error de extracción",
+        "updater_description": "Extrae los archivos de audio (.wem) y localización (.locres) más recientes directamente de los archivos .pak del juego. Esto asegura que siempre estés trabajando con los archivos más actualizados.",
+        
+        # === ACTUALIZACIONES DE APLICACIÓN ===
+        "check_updates": "🔄 Buscar Actualizaciones",
+        "update_available": "Actualización Disponible",
+        "update_message": "Una nueva versión está disponible:\nVersión Actual: {current}\nÚltima Versión: {latest}\n\n¿Quieres descargar la actualización?",
+        "no_updates": "Sin Actualizaciones",
+        "up_to_date": "Ya estás usando la versión más reciente.",
+        "update_error": "Error al buscar actualizaciones",
+        "checking_updates": "Buscando actualizaciones...",
+        
+        # === CONFIGURACIÓN ===
+        "settings_title": "Configuración",
+        "general_settings": "General",
+        "paths_settings": "Rutas",
+        "advanced_settings": "Avanzado",
+        "game_path": "Ruta del Juego:",
+        "wwise_path_setting": "Ruta de Wwise:",
+        "auto_save": "Guardado Automático:",
+        "auto_save_interval": "Intervalo de Guardado Automático (minutos):",
+        "interface_language": "Idioma de la Interfaz:",
+        "theme": "Tema:",
+        "dark_theme": "Tema Oscuro",
+        "light_theme": "Tema Claro",
+        
+        # === PERFILES ===
+        "profiles": "Perfiles",
+        "create_profile": "Crear Perfil Nuevo",
+        "delete_profile": "Eliminar Perfil",
+        "rename_profile": "Renombrar Perfil",
+        "profile_name": "Nombre del Perfil:",
+        "active_profile": "Perfil Activo:",
+        "switch_profile": "Cambiar Perfil",
+        "profile_created": "Perfil creado",
+        "profile_deleted": "Perfil eliminado",
+        "profile_renamed": "Perfil renombrado",
+        "profile_error": "Error de perfil",
+        "confirm_delete_profile": "¿Estás seguro de que quieres eliminar este perfil?",
+        
+        # === DEPURACIÓN ===
+        "debug_console": "Consola de Depuración",
+        "debug_log": "Registro de Depuración",
+        "clear_log": "Limpiar Registro",
+        "save_log": "Guardar Registro",
+        "copy_log": "Copiar Registro",
+        
+        # === ACERCA DE ===
+        "about_title": "Acerca de",
+        "version": "Versión",
+        "created_by": "Creado por",
+        "contributors": "Colaboradores",
+        "license": "Licencia",
+        "github": "GitHub",
+        
+        # === MENSAJES DE ERROR COMUNES ===
+        "file_access_error": "Error de acceso al archivo",
+        "permission_denied": "Permiso denegado",
+        "disk_space_error": "Espacio insuficiente en disco",
+        "invalid_file_format": "Formato de archivo inválido",
+        "corrupted_file": "Archivo corrupto",
+        
+        # === MENSAJES DE ESTADO DE SPLASH ===
+        "splash_loading_app": "Despertando a Osa...",
+        "splash_init_ui": "Iniciando interfaz de usuario...",
+        "splash_loading_profiles": "Cargando perfiles...",
+        
+        # === BÚSQUEDA Y REEMPLAZO ===
+        "find_replace_title": "Buscar y Reemplazar",
+        "find_what": "Buscar:",
+        "replace_with": "Reemplazar con:",
+        "match_case": "Coincidir mayúsculas/minúsculas",
+        "find_next": "Buscar Siguiente",
+        "replace": "Reemplazar",
+        "replace_all": "Reemplazar Todo",
+        "search_results": "{count} resultados encontrados",
+        
+        # === MENSAJES DE REBUILD BNK ===
+        "rebuild_bnk_index": "Reconstruir Índice BNK del Mod",
+        "rebuild_bnk_confirm_title": "Confirmar Reconstrucción",
+        "rebuild_bnk_confirm_text": "¿Reconstruir índices BNK del mod basándose en archivos de audio modificados?",
+        "rebuilding_mod_bnk": "Reconstruyendo BNK del Mod...",
+        "rebuild_complete_title": "Reconstrucción Completa",
+        "rebuild_complete_message_details": "¡Reconstrucción completa!\n\nBNKs creados: {created}\nSonidos actualizados: {updated}\nRevertidos: {reverted}",
+        
+        # === HERRAMIENTAS DIVERSAS ===
+        "batch_operations": "Operaciones en Lote",
+        "import_audio_batch": "Importar Múltiples Audios...",
+        "export_audio_batch": "Exportar Múltiples Audios...",
+        "backup_manager": "Administrador de Respaldos",
+        "view_backups": "Ver Respaldos",
+        "restore_backup": "Restaurar Respaldo",
+        "delete_backup": "Eliminar Respaldo",
+        
+        # === ESTADOS DE CONVERSIÓN ===
+        "update_fun_status_1": "Pidiendo pizza de anchoas para la víctima...",
+        "update_fun_status_2": "Usando teléfono regurgitado más reciente para robar ahorros bancarios...",
+        "update_fun_status_3": "Afilando cuchillos con esponja de última víctima...",
+        "update_fun_status_4": "Robando identidades de prisioneros pasados...",
+        "update_fun_status_5": "Suplantando identidad de última víctima y troleando sus contactos...",
+        "update_fun_status_6": "Tragando bocadillo más reciente... (¡Ñam!)",
+        "update_fun_status_7": "Ajustando disfraz de víctima anterior...",
+        
+        # === INFORMACIÓN DETALLADA DE SOUNDBANKSINFO ===
+        "soundbanksinfo_missing_title": "Falta SoundbanksInfo.json",
+        "soundbanksinfo_missing_details": "Este archivo es necesario para identificar la mayoría de los archivos de audio. ¿Te gustaría ir a la pestaña 'Actualizador de Recursos' para extraer los archivos más recientes del juego ahora?",
+        "go_to_updater": "Ir al Actualizador",
+        "continue_anyway": "Continuar de Todas Formas",
+        
+        # === NOMBRES DE PESTAÑAS ===
+        "tab_audio_editor": "Editor de Audio",
+        "tab_subtitle_editor": "Editor de Subtítulos",
+        "tab_wav_converter": "Convertidor Audio → WEM",
+        "tab_wem_processor": "Procesador WEM",
+        "tab_resource_updater": "Actualizador de Recursos",
+        "tab_localization": "Localización",
+        "tab_debug": "Depuración",
+        
+        # === BOTONES Y TOOLTIPS FALTANTES ===
+        "edit_button": "✏ Editar",
+        "export_button": "💾 Exportar",
+        "delete_mod_button": "🗑 Eliminar Audio de MOD",
+        "volume_toolbar_btn": "🔊 Volumen",
+        "delete_mod_button": "🗑️ Eliminar",
+        "expand_all": "Expandir Todo",
+        "collapse_all": "Colapsar Todo",
+        "search_placeholder": "Buscar...",
+        "show_scanned_files_check": "Mostrar archivos escaneados",
+        "stats_label_text": "Estadísticas",
+        
+        # === ADMINISTRADOR DE PERFILES ===
+        "profile_manager_title": "Administrador de Perfiles de Mods",
+        "profile_manager_tooltip": "Abrir el Administrador de Perfiles de Mods",
+        "edit_profile": "Editar Perfil de Mod",
+        "create_profile": "Crear Nuevo Perfil de Mod",
+        "create_new_profile_btn": "➕ Crear Nuevo...",
+        "add_existing_profile_btn": "📁 Agregar Existente...",
+        "import_mod_from_pak": "Importar Mod desde .pak",
+        "remove_from_list_btn": "➖ Quitar de la Lista",
+        "select_a_profile": "Selecciona un perfil",
+        "author_label": "<b>Autor:</b>",
+        "version_label": "<b>Versión:</b>",
+        "no_description": "<i>Sin descripción.</i>",
+        "edit_details_btn": "⚙️ Editar Detalles...",
+        "active_profile_btn": "✓ Activo",
+        "activate_profile_btn": "Activar Perfil",
+        "error_reading_profile": "<i style='color:red;'>No se pudo leer profile.json</i>",
+        "error_author": "<i style='color:red;'>Error</i>",
+        "error_version": "<i style='color:red;'>Error</i>",
+        "profile_name": "Nombre del Perfil:",
+        "author": "Autor:",
+        "icon_png": "Icono (PNG):",
+        "no_icon_selected": "No se seleccionó icono.",
+        "select_icon": "Seleccionar Icono",
+        "png_images": "Imágenes PNG",
+        "validation_error": "Error de Validación",
+        "profile_name_empty": "El Nombre del Perfil no puede estar vacío.",
+        "project_statistics_title": "Estadísticas del Proyecto",
+        
+        # === REBUILD BNK ===
+        "rebuild_bnk_index": "Reconstruir Índice BNK del Mod",
+        "rebuild_bnk_confirm_title": "Reconstruir Índice BNK",
+        "rebuild_bnk_confirm_text": "Esto escaneará todos los archivos de audio modificados (.wem) y actualizará forzosamente los registros de tamaño en los archivos .bnk de tu mod para que coincidan.\n\nEsto es útil para corregir inconsistencias después de agregar, eliminar o editar archivos WEM manualmente.\n\n¿Deseas continuar?",
+        "rebuilding_mod_bnk": "Reconstruyendo Índice BNK del Mod...",
+        "rebuild_complete_title": "Reconstrucción Completa",
+        "rebuild_complete_message": "¡Reconstrucción completa!\n\n✅ Re-creados {created} archivo(s) BNK en tu mod desde originales.\n🔄 Actualizadas {updated} entradas para coincidir con tus archivos WEM.\n⚙️ Aplicadas {reverted} configuraciones personalizadas de 'Efectos en Juego'.",
+        
+        # === EDITOR DE SUBTÍTULOS ===
+        "subtitle_editor_tab_title": "Editor de Localización",
+        "subtitle_editor_header": "Editor de Localización",
+        "subtitle_editor_desc": "Edita localización directamente. Usa la barra de búsqueda global arriba para filtrar resultados.",
+        "without_audio_filter": "Sin audio",
+        "without_audio_filter_tooltip": "Mostrar solo subtítulos que no tienen archivos de audio correspondientes",
+        "modified_only_filter": "Solo modificados",
+        "modified_only_filter_tooltip": "Mostrar solo subtítulos que han sido modificados",
+        "with_audio_only_filter": "Solo con audio",
+        "with_audio_only_filter_tooltip": "Mostrar solo subtítulos que tienen archivos de audio correspondientes",
+        "refresh_btn": "🔄 Actualizar",
+        "refresh_btn_tooltip": "Actualizar datos de subtítulos desde archivos",
+        "key_header": "Clave",
+        "original_header": "Original",
+        "current_header": "Actual",
+        "audio_header": "Audio",
+        "edit_selected_btn": "✏ Editar Seleccionado",
+        "save_all_changes_btn": "💾 Guardar Todos los Cambios",
+        "subtitle_save_success": "¡Todos los cambios de subtítulos han sido guardados!",
+        
+        # === EXPORTACIÓN DE AUDIO ===
+        "export_audio": "Exportar Audio",
+        "which_version_export": "¿Qué versión te gustaría exportar?",
+        "save_as_wav": "Guardar como WAV",
+        "wav_files": "Archivos WAV",
+        "batch_export": "Exportación por Lotes",
+        "select_output_directory": "Seleccionar Directorio de Salida",
+        "exporting_files": "Exportando {count} archivos...",
+        "export_results": "Se exportaron {successful} archivos exitosamente.\nOcurrieron {errors} errores.",
+        "export_complete": "Exportación Completa",
+        
+        # === DIÁLOGOS DE GUARDADO ===
+        "save_changes_question": "¿Guardar Cambios?",
+        "unsaved_changes_message": "Tienes cambios de subtítulos sin guardar. ¿Guardar antes de cerrar?",
+        
+        # === COMPILACIÓN DE MODS ===
+        "mod_not_found_compile": "Archivo de mod no encontrado. ¿Compilarlo primero?",
+        "mod_compilation_failed": "Compilación de mod fallida",
+        "repak_not_found": "¡repak.exe no encontrado!",
+        "compiling_mod": "Compilando Mod",
+        "running_repak": "Ejecutando repak...",
+        "mod_compiled_successfully": "¡Mod compilado exitosamente!",
+        "wemprocces_desc": "Selecciona idioma para renombrar y colocar archivos WEM durante el procesamiento",
+        
+        # === ARRASTRAR Y SOLTAR ===
+        "drop_on_file_msg": "Por favor suelta sobre un archivo de audio específico.",
+        "replace_audio_title": "Reemplazar Audio",
+        "replace_audio_confirm_msg": "¿Reemplazar audio para:\n{shortname}\n\ncon archivo:\n{filename}?",
+        
+        # === PROCESAMIENTO ===
+        "processing_file_status": "Procesando {filename}...",
+        "processing_additional_subs_status": "Procesando subtítulos adicionales...",
+        "loaded_subs_from_files_status": "Se cargaron {count} subtítulos de {processed_files} archivos",
+        
+        # === WEM PROCESSOR ===
+        "wem_process_language": "Idioma de Proceso WEM:",
+        
+        # === MENÚ CONTEXTUAL (Right-click menu) ===
+        "quick_load_audio_title": "🎵 Cargar Audio Personalizado Rápido...",
+        "quick_load_audio_tooltip": "Reemplaza este audio con tu propio archivo (cualquier formato)",
+        "adjust_original_volume_title": "🔊 Ajustar Volumen Original...",
+        "adjust_original_volume_tooltip": "Cambia el volumen del audio original antes de reemplazar",
+        "toggle_ingame_effects_title": "✨ Alternar Efectos en Juego",
+        "toggle_ingame_effects_tooltip": "Habilitar/deshabilitar efectos de audio en el juego para este sonido",
+        "marking_menu_title": "🖍 Marcar",
+        "export_as_wav": "💾 Exportar como WAV",
+        
+        # === ACERCA DE (About Dialog) ===
+        "about_description": "Una herramienta para gestionar archivos de audio WEM y subtítulos del juego para Outlast Trials, diseñada para modders y equipos de localización.",
+        "key_features": "Características Principales",
+        "audio_management": "🎵 <b>Gestión de Audio:</b> Reproduce, convierte y organiza archivos WEM",
+        "subtitle_editing": "📝 <b>Edición de Subtítulos:</b> Edición fácil con resolución de conflictos",
+        "mod_creation": "📦 <b>Creación de Mods:</b> Compilación y despliegue de mods con un clic",
+        "multi_language": "🌍 <b>Multiidioma:</b> Soporte para más de 14 idiomas",
+        "modern_ui": "🎨 <b>Interfaz:</b> Interfaz limpia con temas oscuro/claro",
+        "technology_stack": "Stack Tecnológico",
+        "built_with": "Construido con Python 3 y PyQt5, utilizando:",
+        "unreal_locres_tool": "UnrealLocres - para editar archivos .locres",
+        "vgmstream_tool": "vgmstream - para reproducir audio WEM",
+        "repak_tool": "repak - para empaquetar archivos .pak",
+        "ffmpeg_tool": "FFmpeg - para conversión de audio",
+        "credits_tab": "Créditos",
+        "license_tab": "Licencia",
+        "original_author": "Autor",
+        "original_author_desc": "Bezna",
+        "developers_label": "Desarrolladores:",
+        "developers_names": "Bezna",
+        "polish_translator_label": "Probador/Traductor Polaco:",
+        "polish_translator_name": "Alaneg",
+        "spanish_translator_label": "Traductora Española:",
+        "spanish_translator_name": "Mercedes",
+        "special_thanks": "Agradecimientos Especiales",
+        "contributors": "A todos los contribuidores y la comunidad de modding",
+        "credits": "Créditos",
+        "license": "Licencia",
+        "open_source": "Proyecto de Código Abierto",
+        "mit_license": "Licencia MIT - Libre de usar, modificar y distribuir",
+        "development_team": "Equipo de Desarrollo",
+        "lead_developer": "<b>Desarrolladores Principales:</b> Bezna",
+        "vgmstream_thanks": "Equipo de vgmstream - Por las herramientas de conversión de audio",
+        "unreal_locres_thanks": "Desarrolladores de UnrealLocres - Por el soporte de localización",
+        "hypermetric_thanks": "hypermetric - Por el empaquetado de mods",
+        "red_barrels_thanks": "Red Barrels - Por crear Outlast Trials",
+        "open_source_libraries": "Bibliotecas de Código Abierto",
+        "pyqt5_lib": "PyQt5 - Framework de GUI",
+        "python_lib": "Biblioteca Estándar de Python",
+        "software_disclaimer": "Este software se proporciona \"tal cual\" sin garantía de ningún tipo. Úselo bajo su propio riesgo.",
+        "license_agreement": "Acuerdo de Licencia",
+        "copyright_notice": "Copyright (c) 2026 Editor de Audio de Outlast Trials",
+        "mit_license_text": "Por la presente se concede permiso, libre de cargos, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados (el \"Software\"), a utilizar el Software sin restricción, incluyendo sin limitación los derechos a usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar, y/o vender copias del Software, y a permitir a las personas a las que se les proporcione el Software a hacer lo mismo, sujeto a las siguientes condiciones:\n\nEl aviso de copyright anterior y este aviso de permiso se incluirán en todas las copias o partes sustanciales del Software.\n\nEL SOFTWARE SE PROPORCIONA \"COMO ESTÁ\", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO NO LIMITADO A GARANTÍAS DE COMERCIALIZACIÓN, IDONEIDAD PARA UN PROPÓSITO PARTICULAR E INCUMPLIMIENTO. EN NINGÚN CASO LOS AUTORES O PROPIETARIOS DE DERECHOS DE AUTOR SERÁN RESPONSABLES DE NINGUNA RECLAMACIÓN, DAÑOS U OTRAS RESPONSABILIDADES, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O CUALQUIER OTRO MOTIVO, DERIVADAS DE, FUERA DE O EN CONEXIÓN CON EL SOFTWARE O SU USO U OTRO TIPO DE ACCIONES EN EL SOFTWARE.",
+        
+        # === DIÁLOGO DE ACTUALIZACIÓN (Update Dialog) ===
+        "new_version_available": "Nueva Versión Disponible",
+        "current_version": "Versión Actual",
+        "latest_version": "Última Versión",
+        "release_notes": "Notas de la Versión",
+        "download": "Descargar",
+        "skip_version": "Omitir Esta Versión",
+        "remind_later": "Recordar Después",
+        
+        # === AJUSTE DE VOLUMEN (Volume Adjustment) ===
+        "volume_adjustment_title": "Ajustar Volumen de Audio",
+        "volume_adjustment_desc": "Ajusta el volumen del audio antes de guardarlo",
+        "preview": "Vista Previa",
+        "apply": "Aplicar",
+        "volume_change": "Cambio de Volumen:",
+        
+        # === ACTUALIZADOR DE RECURSOS (Resource Updater) ===
+        "resource_updater_tab": "Actualizador de Recursos",
+        "pak_file_path": "Ruta del Archivo .pak:",
+        "browse_pak": "Examinar .pak",
+        "extract_audio_files": "Extraer Archivos de Audio",
+        "extract_localization_files": "Extraer Archivos de Localización",
+        "start_update": "Iniciar Actualización",
+        "cancel_update": "Cancelar",
+        "extracting": "Extrayendo...",
+        "extraction_progress": "Progreso de Extracción:",
+        "select_pak_file": "Seleccionar archivo .pak del juego",
+        "pak_files": "Archivos PAK",
+        "extraction_cancelled": "Extracción cancelada",
+        "extraction_failed": "Extracción fallida",
+        "extraction_success": "¡Extracción exitosa!",
+        "files_extracted": "Archivos extraídos exitosamente",
+        
+        # === PROCESO DE REBUILD (Rebuild Process Messages) ===
+        "scanning_modified_files": "Escaneando archivos modificados...",
+        "found_modified_files": "Se encontraron {count} archivos WEM modificados",
+        "mapping_to_bnk": "Mapeando archivos a BNKs padre...",
+        "updating_bnk_file": "Actualizando {filename}...",
+        "rebuild_progress": "Progreso de Reconstrucción: {percent}%",
+        "checking_size_mismatches": "Verificando discrepancias de tamaño...",
+        "fixing_mismatches": "Corrigiendo discrepancias...",
+        "auto_fixed": "Se corrigieron automáticamente {count} discrepancias de tamaño",
+        
+        # === WEM PROCESSOR (Old Tool) ===
+        "wem_processor_tab": "Procesador WEM",
+        "select_wem_files": "Seleccionar Archivos WEM",
+        "wem_files": "Archivos WEM",
+        "add_wem_files": "Agregar Archivos WEM",
+        "remove_selected": "Quitar Seleccionados",
+        "process_files": "Procesar Archivos",
+        "processing": "Procesando...",
+        "wem_process_complete": "Procesamiento WEM Completo",
+        
+        # === BOTONES COMUNES (Common Buttons) ===
+        "ok": "Aceptar",
+        "yes": "Sí",
+        "no": "No",
+        "apply": "Aplicar",
+        "reset": "Restablecer",
+        "default": "Predeterminado",
+        "advanced": "Avanzado",
+        "basic": "Básico",
+        
+        # === TEMAS (Themes) ===
+        "light": "Claro",
+        "dark": "Oscuro",
+        "theme_changed": "Tema cambiado. Reinicia la aplicación para ver los cambios completos.",
+        
+        # === ETIQUETAS DE INFORMACIÓN ===
+        "information": "Información",
+        "details": "Detalles",
+        "options": "Opciones",
+        "preferences": "Preferencias",
+        "general": "General",
+        "appearance": "Apariencia",
+        
+        # === MENÚ CONTEXTUAL - FALTANTES ===
+        "play_mod": "▶ Reproducir Mod",
+        "restore_from_backup_title": "🔄 Restaurar desde Respaldo",
+        "adjust_mod_volume_title": "🔊 Ajustar Volumen del Mod...",
+        "trim_mod_audio_title": "✂️ Recortar Audio del Mod...",
+        
+        # === ACTUALIZADOR DE RECURSOS - COMPLETO ===
+        "updater_header": "Actualizar Recursos del Juego",
+        "pak_file_path_label": "1. Ruta del archivo .pak:",
+        "select_resources_group": "2. Selecciona Recursos a Actualizar",
+        "update_audio_check": "Actualizar Archivos de Audio (Wems)",
+        "update_localization_check": "Actualizar Archivos de Localización",
+        "start_update_btn": "Iniciar Actualización",
+        "update_process_group": "3. Proceso de Actualización",
+        "update_log_ready": "Listo para iniciar el proceso de actualización.",
+        "unpacking_files_from": "Desempaquetando archivos de {pak_name}...",
+        "update_step_unpacking": "Desempaquetando archivos del archivo del juego...",
+        "extracting_audio": "Extrayendo archivos de audio...",
+        "extracting_localization": "Extrayendo archivos de localización...",
+        "copying_files": "Copiando archivos a carpetas de destino...",
+        "update_audio_success": "Archivos de audio actualizados exitosamente",
+        "update_localization_success": "Archivos de localización actualizados exitosamente",
+        "update_complete_msg": "Actualización completa. Los recursos del juego se han actualizado.",
+        "update_error_msg": "Error durante la actualización: {error}",
+        
+        # === PROCESO DE COMPILACIÓN ===
+        "compiling_mod_pak": "Compilando mod a .pak...",
+        "packing_files": "Empaquetando archivos...",
+        "creating_pak": "Creando archivo .pak...",
+        "mod_pak_created": "Archivo .pak del mod creado exitosamente",
+        "preparing_files": "Preparando archivos para compilación...",
+        "compiling_progress": "Progreso de Compilación: {percent}%",
+        "compression_step": "Comprimiendo archivos...",
+        "finalizing_pak": "Finalizando archivo .pak...",
+        
+        # === ATAJOS DE TECLADO ===
+        "shortcut_play_mod_action": "Reproducir Audio del Mod",
+        "shortcut_play_mod_desc": "Reproduce la versión modificada del archivo de audio seleccionado.",
+        "shortcut_play_original_action": "Reproducir Audio Original",
+        "shortcut_play_original_desc": "Reproduce la versión original del archivo de audio seleccionado.",
+        
+        # === CONFIGURACIÓN - FALTANTES ===
+        "subtitle_language": "Idioma de Subtítulos:",
+        "quick_load_settings_group": "Configuración de Carga Rápida",
+        "quick_load_mode_label": "Elige modo de conversión para Cargar Audio Personalizado Rápido:",
+        "quick_load_strict": "Modo Estricto - Falla si es demasiado grande",
+        "quick_load_adaptive": "Modo Adaptativo - Ajusta calidad automáticamente",
+        "conversion_method_group": "Método de Conversión",
+        "bnk_overwrite_radio": "Sobreescritura BNK (Recomendado)",
+        "bnk_overwrite_tooltip": "Convierte con calidad máxima y sobreescribe el tamaño del archivo en el archivo .bnk.",
+        "adaptive_size_matching_radio": "Coincidencia Adaptativa de Tamaño",
+        "adaptive_size_matching_tooltip": "Ajusta la calidad del audio para coincidir con el tamaño del archivo WEM original.",
+        
+        # === MENSAJES DE COMPILACIÓN DIVERTIDOS ===
+        "compiling_step_1": "Limpiando desorden técnico...",
+        "compiling_step_2": "Hackeando archivos del juego... (En realidad solo usando FModel)",
+        "compiling_step_3": "Organizando nueva estructura de audio...",
+        "compiling_step_4": "Pidiéndole ayuda a Kitty...",
+        "compiling_step_5": "Ayudando a Amelia a planear un nuevo escape...",
+        "compiling_step_6": "Diciéndole a Maddie por #97 vez que un ladrillo no es comida...",
+        "compiling_step_7": "Relajándose con Neil mientras Easterman pierde la cabeza...",
+        
+        # === MENSAJES DE ACTUALIZACIÓN DIVERTIDOS ===
+        "update_fun_status_1": "Viendo a Avellanos darle una lección a Easterman...",
+        "update_fun_status_2": "Intentando cortar los barrotes de la sala de sueño...",
+        "update_fun_status_3": "Preparando la lanzadera para las próximas pruebas...",
+        "update_fun_status_4": "Entrenando nuevos impostores para la invasión...",
+        "update_fun_status_5": "Conteniendo los activos principales antes de que se aviven...",
+        "update_fun_status_6": "Advirtiendo a los reactivos sobre los cambios más recientes...",
+        "update_fun_status_7": "Finalizando proceso de actualización...",
+        
+        # === EASTER EGG ===
+        "easter_egg_title": "¡Fuiste asustado por Mooneon!",
+        "easter_egg_loading": "Cargando susto...",
+        "easter_egg_message": "Te advertí que Mooneon te asustaría.",
     }
 }
 class ResourceUpdaterThread(QtCore.QThread):
@@ -3148,10 +3845,10 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
         
         self.create_ui()
         QtCore.QTimer.singleShot(100, self.analyze_wem_file)
+
     def auto_configure_converter(self):
         """Automatically configure converter from parent settings"""
         try:
-  
             if hasattr(self.parent, 'wwise_path_edit') and hasattr(self.parent, 'converter_project_path_edit'):
                 wwise_path = self.parent.wwise_path_edit.text()
                 project_path = self.parent.converter_project_path_edit.text()
@@ -3175,6 +3872,7 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
         except Exception as e:
             DEBUG.log(f"Error auto-configuring Wwise: {e}", "ERROR")
             return False    
+
     def create_ui(self):
         layout = QtWidgets.QVBoxLayout(self)
         
@@ -3203,10 +3901,6 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
             
             layout.addWidget(error_widget)
             return
-        
-        config_widget = QtWidgets.QWidget()
-
-    
         
         analysis_group = QtWidgets.QGroupBox(self.tr("audio_analysis_group"))
         analysis_layout = QtWidgets.QFormLayout(analysis_group)
@@ -3342,21 +4036,26 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
         try:
             file_id = self.entry.get("Id", "")
             if self.is_mod:
-                if self.lang != "SFX":
-                    wem_path = os.path.join(
-                        self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
-                        "Windows", self.lang, f"{file_id}.wem"
-                    )
-                else:
-                    wem_path = os.path.join(
-                        self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
-                        "Windows", f"{file_id}.wem"
-                    )
+  
+                wem_path = self.parent.get_mod_path(file_id, self.lang)
+                if not wem_path or not os.path.exists(wem_path):
+                 
+                    if self.lang != "SFX":
+                        wem_path = os.path.join(
+                            self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
+                            "Windows", "Media", self.lang, f"{file_id}.wem"
+                        )
+                    else:
+                        wem_path = os.path.join(
+                            self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
+                            "Windows", "Media", f"{file_id}.wem"
+                        )
             else:
-                wem_path = os.path.join(self.parent.wem_root, self.lang, f"{file_id}.wem")
+                wem_path = self.parent.get_original_path(file_id, self.lang)
             
-            if not os.path.exists(wem_path):
+            if not wem_path or not os.path.exists(wem_path):
                 self.current_rms_label.setText("File not found")
+                DEBUG.log(f"WemVolumeEditDialog: File not found at {wem_path}", "WARNING")
                 return
             
             temp_wav = tempfile.NamedTemporaryFile(suffix='.wav', delete=False).name
@@ -3384,7 +4083,6 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
             self.current_rms_label.setText("Error")
     
     def on_volume_changed(self, value):
-        """Handle volume slider change"""
         self.volume_label.setText(f"{value}%")
         self.volume_spin.blockSignals(True)
         self.volume_spin.setValue(value)
@@ -3392,9 +4090,7 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
         self.update_preview()
     
     def on_spin_changed(self, value):
-        """Handle spin box change"""
         self.volume_slider.blockSignals(True)
-
         if value > self.volume_slider.maximum():
             self.volume_slider.setMaximum(value + 100)
         self.volume_slider.setValue(value)
@@ -3403,13 +4099,11 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
         self.update_preview()
     
     def set_volume(self, value):
-        """Set volume to specific value"""
         if value > self.volume_slider.maximum():
             self.volume_slider.setMaximum(value + 100)
         self.volume_slider.setValue(value)
     
     def update_preview(self):
-        """Update preview text"""
         if not self.current_analysis:
             self.preview_label.setText(self.tr("waiting_for_analysis"))
             return
@@ -3438,11 +4132,9 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
             text_color = "#a5d6a7" if is_dark_theme else "green"
             self.preview_label.setStyleSheet(f"{base_style} background-color: {bg_color}; color: {text_color};")
 
-        
         self.preview_label.setText(preview_text)
     
     def process_volume_change(self):
-        """Process the volume change"""
         volume = self.volume_slider.value()
         
         if volume == 100:
@@ -3457,7 +4149,6 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
                 self, self.tr("config_required"),
                 self.tr("wwise_config_required_msg")
             )
-
             return
         
         self.progress_widget.show()
@@ -3466,6 +4157,7 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
         thread = threading.Thread(target=self._process_thread, args=(volume,))
         thread.daemon = True
         thread.start()
+
     def _process_thread(self, volume):
         """Process volume change in thread"""
         try:
@@ -3476,37 +4168,26 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
             original_filename = os.path.splitext(shortname)[0]
             
             if self.is_mod:
-                if self.lang != "SFX":
-                    current_mod_path = os.path.join(
-                        self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
-                        "Windows", self.lang, f"{file_id}.wem"
-                    )
-                else:
-                    current_mod_path = os.path.join(
-                        self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
-                        "Windows", f"{file_id}.wem"
-                    )
+                # FIX: Use get_mod_path helper to correctly locate the source file
+                current_mod_path = self.parent.get_mod_path(file_id, self.lang)
                 
-                if not os.path.exists(current_mod_path):
-                    raise Exception("Modified audio file not found")
+                if not current_mod_path or not os.path.exists(current_mod_path):
+                    raise Exception("Modified audio file not found. Try reverting to original first.")
                 
                 backup_path = self.parent.get_backup_path(file_id, self.lang)
                 
                 if os.path.exists(backup_path):
-
                     source_wem_path = backup_path
                     self.update_progress(15, self.tr("status_using_backup"))
                     DEBUG.log(f"Using backup as source: {backup_path}")
                 else:
-
                     os.makedirs(os.path.dirname(backup_path), exist_ok=True)
                     shutil.copy2(current_mod_path, backup_path)
                     source_wem_path = backup_path
                     self.update_progress(15, self.tr("status_backup_created"))
                     DEBUG.log(f"Created backup from current mod: {backup_path}")
             else:
-
-                source_wem_path = os.path.join(self.parent.wem_root, self.lang, f"{file_id}.wem")
+                source_wem_path = self.parent.get_original_path(file_id, self.lang)
                 if not os.path.exists(source_wem_path):
                     raise Exception(f"Original WEM file not found: {source_wem_path}")
                 self.update_progress(15, self.tr("status_using_original"))
@@ -3548,6 +4229,7 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
             final_wav_for_wwise = os.path.join(temp_dir, f"{original_filename}.wav")
             shutil.copy2(temp_wav_adjusted, final_wav_for_wwise)
             
+            # Use source size as target if we are editing original, or if preserving mod size
             target_size = os.path.getsize(source_wem_path)
             
             file_pair = {
@@ -3577,6 +4259,7 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
             
             self.update_progress(85, self.tr("status_deploying_to_mod"))
             
+            # FIX: Use correct deployment path with Media folder
             if self.lang != "SFX":
                 target_dir = os.path.join(
                     self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
@@ -3650,7 +4333,6 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
             )
         
         finally:
- 
             for temp_file in self.temp_files:
                 try:
                     if os.path.exists(temp_file):
@@ -3660,8 +4342,8 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
                             os.remove(temp_file)
                 except Exception as e:
                     DEBUG.log(f"Warning: Failed to cleanup temp file {temp_file}: {e}", "WARNING")  
+
     def update_progress(self, value, text):
-        """Update progress from thread"""
         QtCore.QMetaObject.invokeMethod(
             self.progress_bar, "setValue",
             QtCore.Qt.QueuedConnection,
@@ -3680,37 +4362,29 @@ class WemVolumeEditDialog(QtWidgets.QDialog):
     
     @QtCore.pyqtSlot(str)
     def show_success(self, message):
-        """Show success message"""
         self.progress_widget.hide()
         self.process_btn.setEnabled(True)
-        
         for temp_file in self.temp_files:
             try:
                 if os.path.exists(temp_file):
                     os.remove(temp_file)
             except:
                 pass
-        
         QtWidgets.QMessageBox.information(self, "Success", message)
-        
         if hasattr(self.parent, 'populate_tree'):
             self.parent.populate_tree(self.lang)
-        
         self.accept()
     
     @QtCore.pyqtSlot(str)
     def show_error(self, error):
-        """Show error message"""
         self.progress_widget.hide()
         self.process_btn.setEnabled(True)
-        
         for temp_file in self.temp_files:
             try:
                 if os.path.exists(temp_file):
                     os.remove(temp_file)
             except:
                 pass
-        
         QtWidgets.QMessageBox.critical(self, self.tr("error"), f"{self.tr('volume_change_failed_title')}:\n\n{error}")
 class BatchVolumeEditDialog(QtWidgets.QDialog):
     """Dialog for batch editing volume of multiple files"""
@@ -3734,23 +4408,18 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
         QtCore.QTimer.singleShot(100, self.analyze_files)
     
     def auto_configure_converter(self):
-        """Auto-configure from parent settings"""
         try:
             if hasattr(self.parent, 'wwise_path_edit') and hasattr(self.parent, 'converter_project_path_edit'):
                 wwise_path = self.parent.wwise_path_edit.text()
                 project_path = self.parent.converter_project_path_edit.text()
-                
                 if wwise_path and project_path and os.path.exists(wwise_path):
                     self.wav_converter.set_paths(wwise_path, project_path, tempfile.gettempdir())
                     return True
-            
             wwise_path = self.parent.settings.data.get("wav_wwise_path", "")
             project_path = self.parent.settings.data.get("wav_project_path", "")
-            
             if wwise_path and project_path and os.path.exists(wwise_path):
                 self.wav_converter.set_paths(wwise_path, project_path, tempfile.gettempdir())
                 return True
-                
             return False
         except:
             return False
@@ -3772,7 +4441,6 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
             error_label = QtWidgets.QLabel(self.tr("volume_deps_missing"))
             error_label.setStyleSheet("color: red; padding: 20px; font-size: 14px;")
             layout.addWidget(error_label)
-            
             close_btn = QtWidgets.QPushButton(self.tr("close"))
             close_btn.clicked.connect(self.reject)
             layout.addWidget(close_btn)
@@ -3862,7 +4530,6 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
             self.tr("current_peak_header"), self.tr("new_preview_header"), self.tr("status_header")
         ])
 
-        
         header = self.files_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         for i in range(1, 6):
@@ -3925,7 +4592,6 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
         self.file_analyses = []
         
         for i, (entry, lang) in enumerate(self.entries_and_lang):
-       
             self.files_table.setItem(i, 0, QtWidgets.QTableWidgetItem(entry.get('ShortName', '')))
             self.files_table.setItem(i, 1, QtWidgets.QTableWidgetItem(lang))
             self.files_table.setItem(i, 5, QtWidgets.QTableWidgetItem("Analyzing..."))
@@ -3933,20 +4599,24 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
             try:
                 file_id = entry.get("Id", "")
                 if self.is_mod:
-                    if lang != "SFX":
-                        wem_path = os.path.join(
-                            self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
-                            "Windows", lang, f"{file_id}.wem"
-                        )
-                    else:
-                        wem_path = os.path.join(
-                            self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
-                            "Windows", f"{file_id}.wem"
-                        )
+                   
+                    wem_path = self.parent.get_mod_path(file_id, lang)
+                    if not wem_path or not os.path.exists(wem_path):
+                       
+                        if lang != "SFX":
+                            wem_path = os.path.join(
+                                self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
+                                "Windows", "Media", lang, f"{file_id}.wem"
+                            )
+                        else:
+                            wem_path = os.path.join(
+                                self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
+                                "Windows", "Media", f"{file_id}.wem"
+                            )
                 else:
-                    wem_path = os.path.join(self.parent.wem_root, lang, f"{file_id}.wem")
+                    wem_path = self.parent.get_original_path(file_id, lang)
                 
-                if os.path.exists(wem_path):
+                if wem_path and os.path.exists(wem_path):
                     temp_wav = tempfile.NamedTemporaryFile(suffix='.wav', delete=False).name
                     self.temp_files.append(temp_wav)
                     
@@ -3972,7 +4642,6 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
         self.update_preview_all()
     
     def on_volume_changed(self, value):
-        """Handle volume slider change"""
         self.volume_label.setText(f"{value}%")
         self.volume_spin.blockSignals(True)
         self.volume_spin.setValue(value)
@@ -3980,7 +4649,6 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
         self.update_preview_all()
     
     def on_spin_changed(self, value):
-        """Handle spin box change"""
         self.volume_slider.blockSignals(True)
         if value > self.volume_slider.maximum():
             self.volume_slider.setMaximum(value + 100)
@@ -3990,13 +4658,11 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
         self.update_preview_all()
     
     def set_volume(self, value):
-        """Set volume to specific value"""
         if value > self.volume_slider.maximum():
             self.volume_slider.setMaximum(value + 100)
         self.volume_slider.setValue(value)
     
     def update_preview_all(self):
-        """Update preview for all files"""
         volume = self.volume_slider.value()
         
         for i, analysis in enumerate(self.file_analyses):
@@ -4021,24 +4687,14 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
                 self.files_table.setItem(i, 4, QtWidgets.QTableWidgetItem("N/A"))
     
     def process_all_files(self):
-        """Process all files"""
         volume = self.volume_slider.value()
         
         if volume == 100:
-            QtWidgets.QMessageBox.information(
-                self, "No Change",
-                "Volume is set to 100% (no change)."
-            )
+            QtWidgets.QMessageBox.information(self, "No Change", "Volume is set to 100% (no change).")
             return
         
         if not self.wav_converter.wwise_path or not self.wav_converter.project_path:
-            QtWidgets.QMessageBox.warning(
-                self, "Configuration Required",
-                "Wwise is not configured.\n\n"
-                "Please check:\n"
-                "1. Go to Converter tab and configure Wwise paths\n"
-                "2. Try converting at least one file in Converter tab first"
-            )
+            QtWidgets.QMessageBox.warning(self, "Configuration Required", self.tr("wwise_config_required_msg"))
             return
         
         self.progress_widget.show()
@@ -4081,48 +4737,27 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
                 )
                 
                 try:
-           
                     if self.is_mod:
-               
-                        if lang != "SFX":
-                            current_mod_path = os.path.join(
-                                self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
-                                "Windows", lang, f"{file_id}.wem"
-                            )
-                        else:
-                            current_mod_path = os.path.join(
-                                self.parent.mod_p_path, "OPP", "Content", "WwiseAudio", 
-                                "Windows", f"{file_id}.wem"
-                            )
                         
-                        if not os.path.exists(current_mod_path):
-                            raise Exception(f"Modified audio file not found: {current_mod_path}")
+                        current_mod_path = self.parent.get_mod_path(file_id, lang)
+                        
+                        if not current_mod_path or not os.path.exists(current_mod_path):
+                            raise Exception(f"Modified audio file not found for {file_name}")
                         
                         backup_path = self.parent.get_backup_path(file_id, lang)
-                        DEBUG.log(f"Batch processing {file_name}: checking backup at {backup_path}")
                         
                         if os.path.exists(backup_path):
-                  
                             source_wem_path = backup_path
-                            DEBUG.log(f"Using existing backup as source for {file_name}")
                         else:
-               
                             backup_dir = os.path.dirname(backup_path)
                             os.makedirs(backup_dir, exist_ok=True)
                             shutil.copy2(current_mod_path, backup_path)
                             source_wem_path = backup_path
-                            DEBUG.log(f"Created new backup for {file_name} at: {backup_path}")
-                        
-                        wem_path = current_mod_path
                     else:
-                 
-                        source_wem_path = os.path.join(self.parent.wem_root, lang, f"{file_id}.wem")
-                        wem_path = source_wem_path
+                        source_wem_path = self.parent.get_original_path(file_id, lang)
                         
                         if not os.path.exists(source_wem_path):
                             raise Exception(f"Original WEM file not found: {source_wem_path}")
-                    
-                    DEBUG.log(f"Processing {file_name}: source={source_wem_path}")
                     
                     temp_wav_original = tempfile.NamedTemporaryFile(suffix=f'_{original_filename}_original.wav', delete=False).name
                     self.temp_files.append(temp_wav_original)
@@ -4187,7 +4822,6 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
                     target_path = os.path.join(target_dir, f"{file_id}.wem")
                     
                     shutil.copy2(output_wem, target_path)
-                    
                     successful += 1
                     
                     QtCore.QMetaObject.invokeMethod(
@@ -4209,7 +4843,6 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
                         QtCore.Q_ARG(int, i),
                         QtCore.Q_ARG(str, f"✗ {error_msg}")
                     )
-                    
                     DEBUG.log(f"Error processing {file_name}: {str(e)}", "ERROR")
             
             QtCore.QMetaObject.invokeMethod(
@@ -4229,20 +4862,17 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
 
     @QtCore.pyqtSlot(int, str, str)
     def update_progress(self, progress, main_text, current_file):
-        """Update progress"""
         self.progress_bar.setValue(progress)
         self.progress_label.setText(main_text)
         self.current_file_label.setText(current_file)
 
     @QtCore.pyqtSlot(int, str)
     def update_file_status(self, row, status):
-        """Update file status"""
         if row < self.files_table.rowCount():
             self.files_table.setItem(row, 5, QtWidgets.QTableWidgetItem(status))
 
     @QtCore.pyqtSlot(int, int, int)
     def processing_complete(self, successful, failed, volume):
-        """Processing complete"""
         self.progress_widget.hide()
         self.process_btn.setEnabled(True)
         
@@ -4267,7 +4897,6 @@ class BatchVolumeEditDialog(QtWidgets.QDialog):
 
     @QtCore.pyqtSlot(str)
     def show_error(self, error):
-        """Show error"""
         self.progress_widget.hide()
         self.process_btn.setEnabled(True)
         QtWidgets.QMessageBox.critical(self, self.tr("batch_process_error_title"), error)
@@ -7204,7 +7833,7 @@ class ProfileManagerDialog(QtWidgets.QDialog):
         if profile_name in self.settings.data.get("mod_profiles", {}):
             QtWidgets.QMessageBox.warning(self, self.tr("error"), self.tr("profile_exists_error"))
             return
-
+        self.profile_name_for_import = profile_name
         self.progress_dialog = ProgressDialog(self.parent_app, self.tr("importing_mod_progress"))
         self.progress_dialog.progress.setRange(0, 0)
         self.progress_dialog.show()
@@ -7218,15 +7847,58 @@ class ProfileManagerDialog(QtWidgets.QDialog):
             self.progress_dialog.close()
 
         if success:
-            QtWidgets.QMessageBox.information(
-                self,
-                self.tr("import_successful_title"),
-                message
-            )
+            profile_name = getattr(self, 'profile_name_for_import', None)
+            
+            if profile_name:
+
+                profiles_root = self.settings.data.get("mods_root_path")
+                if not profiles_root:
+                    
+                    profiles_root = os.path.join(self.parent_app.base_path, "Profiles")
+
+                new_profile_path = os.path.join(profiles_root, profile_name)
+                new_mod_p_path = os.path.join(new_profile_path, f"{profile_name}_P")
+
+                if not hasattr(self.parent_app, 'profiles'):
+                    self.parent_app.profiles = {}
+                
+                self.parent_app.profiles[profile_name] = {
+                    "path": new_profile_path,
+                    "mod_p_path": new_mod_p_path,
+                    "icon": os.path.join(new_profile_path, "icon.png"),
+                    "data": {"author": "Imported", "version": "1.0", "description": "Imported from .pak"}
+                }
+
+                self.settings.data.get("mod_profiles", {})[profile_name] = new_profile_path
+                
+                self.parent_app.set_active_profile(profile_name)
+                
+                if self.parent_app.active_profile_name != profile_name:
+                    self.parent_app.active_profile_name = profile_name
+                    self.parent_app.mod_p_path = new_mod_p_path
+                    self.parent_app.setWindowTitle(f"{self.parent_app.tr('app_title')} - [{profile_name}]")
+                    self.settings.data["active_profile"] = profile_name
+                    self.settings.save()
+                    
+                    if hasattr(self.parent_app, 'update_profile_ui'):
+                        self.parent_app.update_profile_ui()
 
             self.populate_profile_list()
-
             self.profile_changed.emit()
+
+            reply = QtWidgets.QMessageBox.question(
+                self,
+                self.tr("import_successful_title"),
+                f"{message}\n\n"
+                f"It is highly recommended to rebuild the BNK index for imported mods.\n"
+                f"Do you want to proceed with the rebuild now?",
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+            )
+
+            if reply == QtWidgets.QMessageBox.Yes:
+                self.close() 
+                QtCore.QTimer.singleShot(300, lambda: self.parent_app.rebuild_bnk_index(confirm=False))
+            
         else:
             QtWidgets.QMessageBox.critical(
                 self,
@@ -7496,7 +8168,7 @@ class ProfileManagerDialog(QtWidgets.QDialog):
         self.settings.save()
         self.populate_profile_list()
         self.profile_changed.emit()
-        QtWidgets.QMessageBox.information(self, self.parent_app.tr("profile_activated_title"), self.parent_app.tr("profile_activated_text").format(name=name))  
+        QtWidgets.QMessageBox.information(self, self.parent_app.tr("profile_activated_title"), self.parent_app.tr("profile_activated_text").format(name=name))
 class ImportModThread(QtCore.QThread):
     finished = QtCore.pyqtSignal(bool, str) # success, message
 
@@ -7510,7 +8182,7 @@ class ImportModThread(QtCore.QThread):
 
     def run(self):
         try:
-       
+           
             if os.path.exists(self.temp_extract_path):
                 shutil.rmtree(self.temp_extract_path)
             os.makedirs(self.temp_extract_path, exist_ok=True)
@@ -7541,7 +8213,6 @@ class ImportModThread(QtCore.QThread):
                     item_path = os.path.join(windows_audio_path, item)
                     if os.path.isfile(item_path) and item.lower().endswith(".wem"):
                         needs_conversion = True
-                        DEBUG.log(f"Found loose WEM in Windows root: {item}")
                         break
                 
                 if not needs_conversion:
@@ -7551,12 +8222,11 @@ class ImportModThread(QtCore.QThread):
                             for sub_item in os.listdir(item_path):
                                 if sub_item.lower().endswith(".wem"):
                                     needs_conversion = True
-                                    DEBUG.log(f"Found loose WEM in language folder: {item}/{sub_item}")
                                     break
                         if needs_conversion: break
 
                 if needs_conversion:
-       
+                   
                     should_convert = QtCore.QMetaObject.invokeMethod(
                         self.parent_app, 
                         "_ask_convert_old_mod_structure", 
@@ -7573,6 +8243,15 @@ class ImportModThread(QtCore.QThread):
             if os.path.exists(destination_opp_path):
                 shutil.rmtree(destination_opp_path)
             shutil.copytree(unpacked_opp_path, destination_opp_path)
+
+            bnk_deleted_count = 0
+            for root, dirs, files in os.walk(destination_opp_path):
+                for file in files:
+                    if file.lower().endswith(".bnk"):
+                        os.remove(os.path.join(root, file))
+                        bnk_deleted_count += 1
+            if bnk_deleted_count > 0:
+                DEBUG.log(f"Removed {bnk_deleted_count} outdated BNK files from imported mod to prevent conflicts.")
 
             watermark_path = os.path.join(destination_opp_path, "CreatedByAudioEditor.txt")
             if os.path.exists(watermark_path):
@@ -7653,7 +8332,7 @@ class ImportModThread(QtCore.QThread):
                         except OSError:
                             pass 
                     
-        DEBUG.log("Structure conversion complete.")
+        DEBUG.log("Structure conversion complete.")  
 class SaveSubtitlesThread(QtCore.QThread):
     progress_updated = QtCore.pyqtSignal(int, str)
     finished = QtCore.pyqtSignal(int, list) # count, errors_list
@@ -7827,6 +8506,11 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         self.search_timer.setSingleShot(True)
         self.search_timer.setInterval(400) 
         self.search_timer.timeout.connect(self.perform_delayed_search)
+        self.tree_loader_timer = QtCore.QTimer()
+        self.tree_loader_timer.setInterval(0) 
+        self.tree_loader_timer.timeout.connect(self._process_tree_batch)
+        self.tree_loader_generator = None
+        self.current_loading_lang = None
         self.create_ui()
         # QtCore.QTimer.singleShot(100, self.load_orphans_from_cache_or_scan) 
         self.apply_settings()
@@ -7834,7 +8518,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
 
 
         self.update_auto_save_timer()
-        self.check_updates_on_startup()    
+        
         self.log_signal.connect(self.append_to_log_widget)
         DEBUG.log("=== OutlastTrials AudioEditor Started Successfully ===")
     def check_soundbanks_info(self):
@@ -7999,12 +8683,16 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             DEBUG.log("Application window shown for the first time. Scheduling initial checks.")
             
             def run_all_startup_checks():
+    
                 if self.check_initial_resources():
                     return
+                
                 loose_files_found = self.check_for_loose_wems()
             
                 if not loose_files_found:
                     self.check_soundbanks_info()
+
+                QtCore.QTimer.singleShot(1500, self.check_updates_on_startup)
 
             QtCore.QTimer.singleShot(100, run_all_startup_checks)
     def verify_bnk_sizes(self):
@@ -8153,14 +8841,19 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     return entries[0], mod_bnk_path
         
         return None, None
-    def rebuild_bnk_index(self):
-
+    def rebuild_bnk_index(self, confirm=True):
         if not self.ensure_active_profile():
             return
 
-        reply = QtWidgets.QMessageBox.question(self, self.tr("rebuild_bnk_confirm_title"), self.tr("rebuild_bnk_confirm_text"), QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        if reply == QtWidgets.QMessageBox.No:
-            return
+        if confirm:
+            reply = QtWidgets.QMessageBox.question(
+                self, 
+                self.tr("rebuild_bnk_confirm_title"), 
+                self.tr("rebuild_bnk_confirm_text"), 
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+            )
+            if reply == QtWidgets.QMessageBox.No:
+                return
 
         progress = ProgressDialog(self, self.tr("rebuilding_mod_bnk"))
         progress.show()
@@ -8168,7 +8861,6 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         self.rebuild_thread = threading.Thread(target=self._rebuild_bnk_thread, args=(progress,))
         self.rebuild_thread.daemon = True
         self.rebuild_thread.start()
-
     def find_all_original_bnks(self):
         all_bnks = []
         wems_root = os.path.join(self.base_path, "Wems")
@@ -8843,12 +9535,21 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         mod_wem_path = self.get_mod_path(file_id, lang)
 
         try:
-
-            if os.path.exists(mod_wem_path):
+          
+            if mod_wem_path and os.path.exists(mod_wem_path):
                 os.remove(mod_wem_path)
                 DEBUG.log(f"Deleted wem audio: {mod_wem_path}")
+            
+            old_paths = [
+                os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", lang, f"{file_id}.wem"),
+                os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{file_id}.wem")
+            ]
+            for p in old_paths:
+                if os.path.exists(p):
+                    os.remove(p)
+                    DEBUG.log(f"Deleted legacy wem audio: {p}")
 
-            bnk_reverted = False
+            bnk_reverted_count = 0
             bnk_files_info = self.find_relevant_bnk_files()
 
             for bnk_path, bnk_type in bnk_files_info:
@@ -8871,6 +9572,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 original_entry = original_entries[0]
 
                 mod_bnk_editor = BNKEditor(mod_bnk_path)
+               
                 if mod_bnk_editor.modify_sound(source_id, 
                                             new_size=original_entry.file_size, 
                                             override_fx=original_entry.override_fx,
@@ -8878,13 +9580,13 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     mod_bnk_editor.save_file()
                     self.invalidate_bnk_cache(source_id)
                     DEBUG.log(f"BNK {os.path.basename(mod_bnk_path)} restored to original values.")
-                    bnk_reverted = True
-                    break 
+                    bnk_reverted_count += 1
+         
             
-            if bnk_reverted:
-                self.status_bar.showMessage(f"Deleted mod audio and restored BNK for {shortname}", 3000)
+            if bnk_reverted_count > 0:
+                self.status_bar.showMessage(f"Deleted mod audio and restored {bnk_reverted_count} BNK entries for {shortname}", 3000)
             else:
-                self.status_bar.showMessage(f"Deleted mod audio for {shortname}", 3000)
+                self.status_bar.showMessage(f"Deleted mod audio for {shortname} (No BNK changes found)", 3000)
 
         except Exception as e:
             DEBUG.log(f"Error deleting {shortname}: {e}", "ERROR")
@@ -10404,7 +11106,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         layout = QtWidgets.QFormLayout(dialog)
         
         lang_combo = QtWidgets.QComboBox()
-        lang_map = [("English", "en"), ("Русский", "ru"), ("Polski", "pl")]
+        lang_map = [("English", "en"), ("Русский", "ru"), ("Polski", "pl"), ("Español (México)", "es-MX")]
         for name, code in lang_map:
             lang_combo.addItem(name, code)
         
@@ -10827,17 +11529,149 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             if current_index < len(languages):
                 return languages[current_index]
         return None
+    def _tree_populate_generator(self, tree, filtered_wrappers, lang, is_flat_view, selected_keys):
+
+        
+        root_groups = {}
+        id_only_category = "Numeric ID Files"
+        id_only_item = None
+        
+        
+        for i, wrapper in enumerate(filtered_wrappers):
+            entry = wrapper['_orig']
+            has_mod = wrapper['has_mod_audio']
+            
+            if is_flat_view:
+        
+                parent_item = tree.invisibleRootItem()
+                item = self.add_tree_item(parent_item, entry, lang, has_mod)
+            else:
+             
+                shortname = entry.get("ShortName", "")
+                name_without_ext = shortname.rsplit('.', 1)[0]
+                
+                if name_without_ext.isdigit():
+                    if id_only_item is None:
+                        id_only_item = QtWidgets.QTreeWidgetItem(tree, [f"{id_only_category}"])
+                    
+                    self.add_tree_item(id_only_item, entry, lang, has_mod)
+                else:
+                    parts = name_without_ext.split("_")[:3]
+                    
+                    if not parts:
+                        self.add_tree_item(tree.invisibleRootItem(), entry, lang, has_mod)
+                        continue
+
+                    current_parent_dict = root_groups
+                    current_parent_item = tree.invisibleRootItem()
+
+                    for level_idx, part in enumerate(parts):
+                        if part not in current_parent_dict:
+                            display_name = "VO (Voice)" if level_idx == 0 and part.upper() == "VO" else part
+                            new_item = QtWidgets.QTreeWidgetItem(current_parent_item, [display_name])
+                            
+                            if level_idx == 0 and part.upper() == "VO":
+                                new_item.setExpanded(True)
+                            
+                            current_parent_dict[part] = {"__item__": new_item, "__children__": {}}
+                        
+                        current_parent_item = current_parent_dict[part]["__item__"]
+                        current_parent_dict = current_parent_dict[part]["__children__"]
+
+                    self.add_tree_item(current_parent_item, entry, lang, has_mod)
+
+            if selected_keys:
+                key = os.path.splitext(entry.get("ShortName", ""))[0]
+                if key in selected_keys:
+
+                    pass 
+
+            if i % 50 == 0:
+                yield
+
+        if not is_flat_view:
+            self._update_group_counts_recursive(tree.invisibleRootItem(), id_only_category)
+            if id_only_item:
+                id_only_item.setText(0, f"{id_only_category} ({id_only_item.childCount()})")
+
+        if selected_keys:
+            self.restore_tree_selection(tree, selected_keys)
+        
+        yield
+
+    def _process_tree_batch(self):
+      
+        if not self.tree_loader_generator or not self.current_loading_lang:
+            self.tree_loader_timer.stop()
+            return
+
+        widgets = self.tab_widgets.get(self.current_loading_lang)
+        if not widgets:
+            self.tree_loader_timer.stop()
+            return
+            
+        tree = widgets["tree"]
+        
+        tree.setUpdatesEnabled(False)
+        
+        start_time = time.time()
+        try:
+          
+            while (time.time() - start_time) < 0.015:
+                next(self.tree_loader_generator)
+                
+        except StopIteration:
+            
+            self.tree_loader_timer.stop()
+            self.tree_loader_generator = None
+            tree.setUpdatesEnabled(True)
+            # DEBUG.log("Tree population complete")
+        except Exception as e:
+            DEBUG.log(f"Error in tree population: {e}", "ERROR")
+            self.tree_loader_timer.stop()
+            self.tree_loader_generator = None
+            tree.setUpdatesEnabled(True)
+        finally:
+        
+            tree.setUpdatesEnabled(True)
+
+    def _update_group_counts_recursive(self, item, id_category_name):
+       
+        count = 0
+        for i in range(item.childCount()):
+            child = item.child(i)
+           
+            if child.text(0).startswith(id_category_name):
+                continue
+                
+            if child.childCount() > 0:
+                count += self._update_group_counts_recursive(child, id_category_name)
+            else:
+                count += 1
+        
+        if item.parent() is not None and item.childCount() > 0:
+            current_text = item.text(0)
+            if "(" not in current_text:
+                item.setText(0, f"{current_text} ({count})")
+        
+        return count
     @QtCore.pyqtSlot(str)
     def populate_tree(self, lang):
         DEBUG.log(f"Populating tree for language: {lang}")
         
         if lang not in self.tab_widgets:
-            DEBUG.log(f"Language {lang} not in tab_widgets", "WARNING")
             return
             
         widgets = self.tab_widgets[lang]
         tree = widgets["tree"]
         
+        if self.tree_loader_timer.isActive():
+            self.tree_loader_timer.stop()
+            self.tree_loader_generator = None
+   
+            if self.current_loading_lang and self.current_loading_lang in self.tab_widgets:
+                self.tab_widgets[self.current_loading_lang]["tree"].setUpdatesEnabled(True)
+
         selected_keys = []
         try:
             for item in tree.selectedItems():
@@ -10850,54 +11684,74 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         except RuntimeError:
             pass
         
-        filter_type = widgets["filter_combo"].currentIndex()
-        try:
-            tree.blockSignals(True) 
-            tree.clear()
-        except RuntimeError:
-            DEBUG.log("Error clearing tree, creating new tree", "WARNING")
-            tree.blockSignals(False)
-            return
+        tree.clear()
+        
         filter_text = widgets["filter_combo"].currentText()
+        filter_type = widgets["filter_combo"].currentIndex()
         sort_type = widgets["sort_combo"].currentIndex() 
         search_text = self.global_search.text().lower()
         
-        try:
-            tree.clear()
-        except RuntimeError:
-            DEBUG.log("Error clearing tree, creating new tree", "WARNING")
-            return
-        
         filtered_entries = []
+        source_entries = self.entries_by_lang.get(lang, [])
+        
+        search_terms = []
+        if search_text:
+           
+            search_terms = [term.strip() for term in search_text.split() if term.strip()]
+        
         if filter_text.startswith("With Tag: "):
             selected_tag = filter_text.split(": ", 1)[1]
-            for entry in self.entries_by_lang.get(lang, []):
+            for entry in source_entries:
                 key = os.path.splitext(entry.get("ShortName", ""))[0]
-                if self.marked_items.get(key, {}).get('tag') == selected_tag:
-                    if not search_text or search_text in f"{entry.get('Id', '')} {entry.get('ShortName', '')} {self.subtitles.get(key, '')}".lower():
-                        filtered_entries.append(entry)
+                
+                if self.marked_items.get(key, {}).get('tag') != selected_tag:
+                    continue
+                    
+                if search_terms:
+                    
+                    content_to_search = f"{entry.get('Id', '')} {entry.get('ShortName', '')} {self.subtitles.get(key, '')}".lower()
+                    
+                    if not all(term in content_to_search for term in search_terms):
+                        continue
+                        
+                filtered_entries.append({'_orig': entry, 'has_mod_audio': False})
         else:
-            for entry in self.entries_by_lang.get(lang, []):
+            for entry in source_entries:
                 key = os.path.splitext(entry.get("ShortName", ""))[0]
                 subtitle = self.subtitles.get(key, "")
-                mod_path = self.get_mod_path(entry.get("Id", ""), lang)
-                has_mod_audio = os.path.exists(mod_path) if mod_path else False
                 
-                if filter_type == 1 and not subtitle: continue
-                elif filter_type == 2 and subtitle: continue
-                elif filter_type == 3 and key not in self.modified_subtitles: continue
-                elif filter_type == 4 and not has_mod_audio: continue
-                if search_text and search_text not in f"{entry.get('Id', '')} {entry.get('ShortName', '')} {subtitle}".lower(): continue
+                has_mod_audio = False
+                if filter_type == 4: 
+                    mod_path = self.get_mod_path(entry.get("Id", ""), lang)
+                    has_mod_audio = os.path.exists(mod_path) if mod_path else False
                 
-                entry_with_status = entry.copy()
-                entry_with_status['has_mod_audio'] = has_mod_audio
-                filtered_entries.append(entry_with_status)
+                if filter_type == 1 and not subtitle: continue          # With Subtitles
+                elif filter_type == 2 and subtitle: continue            # Without Subtitles
+                elif filter_type == 3 and key not in self.modified_subtitles: continue # Modified
+                elif filter_type == 4 and not has_mod_audio: continue   # Modded (Audio)
                 
-        DEBUG.log(f"Filtered entries: {len(filtered_entries)} out of {len(self.entries_by_lang.get(lang, []))}")
+                if search_terms:
+                    content_to_search = f"{entry.get('Id', '')} {entry.get('ShortName', '')} {subtitle}".lower()
+                    
+                    match = True
+                    for term in search_terms:
+                        if term not in content_to_search:
+                            match = False
+                            break
+                    if not match:
+                        continue
+                
+                if filter_type != 4:
+                     mod_path = self.get_mod_path(entry.get("Id", ""), lang)
+                     has_mod_audio = os.path.exists(mod_path) if mod_path else False
+
+                entry_wrapper = {'_orig': entry, 'has_mod_audio': has_mod_audio}
+                filtered_entries.append(entry_wrapper)
 
         if sort_type == 4: # Recent First
             mod_times_cache = {}
-            for entry in filtered_entries:
+            for wrapper in filtered_entries:
+                entry = wrapper['_orig']
                 file_id = entry.get("Id", "")
                 mod_wem_path = self.get_mod_path(file_id, lang)
                 if os.path.exists(mod_wem_path):
@@ -10905,99 +11759,29 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     except OSError: mod_times_cache[file_id] = 0
                 else: mod_times_cache[file_id] = 0
             
-            filtered_entries.sort(key=lambda x: mod_times_cache.get(x.get("Id", ""), 0), reverse=True)
-        elif sort_type == 0: filtered_entries.sort(key=lambda x: x.get("ShortName", "").lower())
-        elif sort_type == 1: filtered_entries.sort(key=lambda x: x.get("ShortName", "").lower(), reverse=True)
-        elif sort_type == 2: filtered_entries.sort(key=lambda x: int(x.get("Id", "0")))
-        elif sort_type == 3: filtered_entries.sort(key=lambda x: int(x.get("Id", "0")), reverse=True)
+            filtered_entries.sort(key=lambda x: mod_times_cache.get(x['_orig'].get("Id", ""), 0), reverse=True)
+        elif sort_type == 0: filtered_entries.sort(key=lambda x: x['_orig'].get("ShortName", "").lower())
+        elif sort_type == 1: filtered_entries.sort(key=lambda x: x['_orig'].get("ShortName", "").lower(), reverse=True)
+        elif sort_type == 2: filtered_entries.sort(key=lambda x: int(x['_orig'].get("Id", "0")))
+        elif sort_type == 3: filtered_entries.sort(key=lambda x: int(x['_orig'].get("Id", "0")), reverse=True)
 
-        if search_text or sort_type == 4:
-            DEBUG.log("Search is active or sorting by recent. Displaying a flat list.")
-            parent_item = tree.invisibleRootItem()
-            for entry in filtered_entries:
-                self.add_tree_item(parent_item, entry, lang, entry.get('has_mod_audio', False))
-        else: 
-            DEBUG.log("No search. Grouping entries by name categories.")
-            
-            root_groups = {} 
-            id_only_category = "Numeric ID Files"
-            id_only_files = []
-
-            for entry in filtered_entries:
-                shortname = entry.get("ShortName", "")
-                name_without_ext = shortname.rsplit('.', 1)[0]
-                
-                if name_without_ext.isdigit():
-                    id_only_files.append(entry)
-                    continue
-                
-                parts = name_without_ext.split("_")[:3] 
-                
-                if not parts:
-                    continue
-
-                current_parent_dict = root_groups
-                current_parent_item = tree.invisibleRootItem()
-
-                for i, part in enumerate(parts):
-                    if part not in current_parent_dict:
-                        display_name = "VO (Voice)" if i == 0 and part.upper() == "VO" else part
-                        new_item = QtWidgets.QTreeWidgetItem(current_parent_item, [display_name])
-                        
-                        if i == 0 and part.upper() == "VO":
-                            new_item.setExpanded(True)
-                        
-                        current_parent_dict[part] = {"__item__": new_item, "__children__": {}}
-                    
-                    current_parent_item = current_parent_dict[part]["__item__"]
-                    current_parent_dict = current_parent_dict[part]["__children__"]
-
-                self.add_tree_item(current_parent_item, entry, lang, entry.get('has_mod_audio', False))
-
-            if id_only_files:
-                id_item = QtWidgets.QTreeWidgetItem(tree, [f"{id_only_category} ({len(id_only_files)})"])
-                for entry in id_only_files:
-                     self.add_tree_item(id_item, entry, lang, entry.get('has_mod_audio', False))
-            
-            def update_counts(item):
-                if item.childCount() == 0:
-                    return 1
-                
-                count = 0
-                for i in range(item.childCount()):
-                    child = item.child(i)
-                    if child.childCount() > 0:
-                        count += update_counts(child)
-                    else:
-                        count += 1
-                
-                item_text = item.text(0)
-                if "(" not in item_text: 
-                    item.setText(0, f"{item_text} ({count})")
-                return count
-
-            for i in range(tree.topLevelItemCount()):
-                if tree.topLevelItem(i).text(0).startswith(id_only_category):
-                    continue
-                update_counts(tree.topLevelItem(i))
-
-
-        tree.blockSignals(False)
-        
-        if selected_keys:
-            self.restore_tree_selection(tree, selected_keys)
-        elif tree.topLevelItemCount() > 0:
-            first_item = tree.topLevelItem(0)
-            tree.setCurrentItem(first_item)
-
-        subtitle_count = sum(1 for entry in filtered_entries if self.subtitles.get(os.path.splitext(entry.get("ShortName", ""))[0], ""))
-        total_lang_entries = len(self.entries_by_lang.get(lang, []))
+        subtitle_count = sum(1 for w in filtered_entries if self.subtitles.get(os.path.splitext(w['_orig'].get("ShortName", ""))[0], ""))
+        total_lang_entries = len(source_entries)
         stats_text = self.tr("stats_label_text").format(
             filtered_count=len(filtered_entries),
             total_count=total_lang_entries,
             subtitle_count=subtitle_count
         )
         widgets["stats_label"].setText(stats_text)
+
+        self.current_loading_lang = lang
+        is_flat_view = bool(search_text or sort_type == 4)
+        
+        self.tree_loader_generator = self._tree_populate_generator(
+            tree, filtered_entries, lang, is_flat_view, selected_keys
+        )
+        
+        self.tree_loader_timer.start()
     def add_tree_item(self, parent_item, entry, lang, has_mod_audio):
         """Adds a single entry as an item to the tree."""
         shortname = entry.get("ShortName", "")
@@ -11030,7 +11814,9 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             item.setForeground(2, QtGui.QBrush(QtGui.QColor(128, 128, 128)))
             
         if entry.get("Source") == "MediaFilesNotInAnyBank":
-            item.setForeground(0, QtGui.QBrush(QtGui.QColor(100, 100, 200)))    
+            item.setForeground(0, QtGui.QBrush(QtGui.QColor(100, 100, 200)))
+            
+        return item 
     def restore_tree_selection(self, tree, target_keys):
         """Restore tree selection after refresh"""
         def search_and_select(parent_item):
@@ -11331,17 +12117,23 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
             bnk_size_button.setText("N/A")
             widgets["modified_info_labels"]["override_fx"].setText("N/A")
     def revert_single_bnk_entry(self, file_id, lang):
-
-        DEBUG.log(f"Reverting BNK entry for ID {file_id} in lang {lang}")
+        """Reverts BNK entry to original values in ALL matching BNK files."""
+        DEBUG.log(f"Reverting BNK entries for ID {file_id}")
         try:
             source_id = int(file_id)
-            reverted = False
+            reverted_count = 0
             
             bnk_files_info = self.find_relevant_bnk_files()
-            mod_bnk_path_to_fix = None
-            original_bnk_path_to_use = None
 
             for bnk_path, bnk_type in bnk_files_info:
+               
+                original_bnk = BNKEditor(bnk_path)
+                original_entries = original_bnk.find_sound_by_source_id(source_id)
+                if not original_entries:
+                    continue
+                
+                original_entry = original_entries[0]
+
                 if bnk_type == 'sfx':
                     rel_path = os.path.relpath(bnk_path, os.path.join(self.base_path, "Wems", "SFX"))
                     mod_bnk_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", rel_path)
@@ -11350,38 +12142,24 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     mod_bnk_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", rel_path)
                 
                 if os.path.exists(mod_bnk_path):
+                    mod_editor = BNKEditor(mod_bnk_path)
+                    
+                    if mod_editor.modify_sound(source_id, 
+                                               new_size=original_entry.file_size, 
+                                               override_fx=original_entry.override_fx):
+                        mod_editor.save_file()
+                        self.invalidate_bnk_cache(source_id)
+                        reverted_count += 1
+                        DEBUG.log(f"Reverted entry in {os.path.basename(mod_bnk_path)}")
 
-                    temp_orig_editor = BNKEditor(bnk_path)
-                    if temp_orig_editor.find_sound_by_source_id(source_id):
-                        mod_bnk_path_to_fix = mod_bnk_path
-                        original_bnk_path_to_use = bnk_path
-                        break
-            
-            if not mod_bnk_path_to_fix or not original_bnk_path_to_use:
-                raise FileNotFoundError("Could not locate the modified/original BNK pair for this sound entry.")
-
-            mod_editor = BNKEditor(mod_bnk_path_to_fix)
-            original_editor = BNKEditor(original_bnk_path_to_use)
-            
-            original_entries = original_editor.find_sound_by_source_id(source_id)
-            if not original_entries:
-                raise ValueError(f"Could not find entry for ID {source_id} in the original BNK file to revert to.")
-            original_entry = original_entries[0]
-
-            if mod_editor.modify_sound(source_id, new_size=original_entry.file_size, override_fx=original_entry.override_fx):
-                mod_editor.save_file()
-                self.invalidate_bnk_cache(source_id)
-                reverted = True
-
-            if reverted:
-                QtWidgets.QMessageBox.information(self, "Success", "BNK record reverted successfully to its original state.")
+            if reverted_count > 0:
+                QtWidgets.QMessageBox.information(self, "Success", f"Reverted {reverted_count} BNK entries.")
                 self.on_selection_changed(lang)
             else:
-                QtWidgets.QMessageBox.warning(self, "Error", "Failed to revert BNK record. The entry might already be correct.")
+                QtWidgets.QMessageBox.warning(self, "Error", "No BNK entries needed reverting.")
 
         except Exception as e:
-            DEBUG.log(f"Error reverting BNK entry: {e}", "ERROR")
-            QtWidgets.QMessageBox.critical(self, "Error", f"An unexpected error occurred while reverting the BNK record:\n{str(e)}")         
+            QtWidgets.QMessageBox.critical(self, "Error", str(e))
     def get_file_durations(self, file_id, lang, widgets):
 
         wem_path = os.path.join(self.wem_root, lang, f"{file_id}.wem")
@@ -12648,12 +13426,21 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         DEBUG.log("Active profile was invalid or not set. Resetting.")
         
     def update_profile_ui(self):
+        
+        if not hasattr(self, 'profile_combo'):
+            if self.active_profile_name:
+                self.setWindowTitle(f"{self.tr('app_title')} - [{self.active_profile_name}]")
+            else:
+                self.setWindowTitle(self.tr("app_title"))
+            return
+
         self.profile_combo.blockSignals(True)
         self.profile_combo.clear()
         
         if not self.profiles:
-            self.profile_combo.addItem("No Profiles Found. Click 'New'.")
+            self.profile_combo.addItem("No Profiles Found")
             self.profile_combo.setEnabled(False)
+            self.profile_combo.blockSignals(False)
             return
 
         self.profile_combo.setEnabled(True)
@@ -12937,30 +13724,29 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         
         try:
             backup_wem_size = os.path.getsize(backup_path)
-            DEBUG.log(f"Backup file size for ID {file_id} is {backup_wem_size} bytes.")
         except Exception as e:
-            return False, f"Could not read backup file size: {e}"
+            return False, f"Could not read backup file: {e}"
 
         if lang != "SFX":
-            mod_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", lang, f"{file_id}.wem")
+            mod_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "Media", lang, f"{file_id}.wem")
         else:
-            mod_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", f"{file_id}.wem")
+            mod_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", "Media", f"{file_id}.wem")
         
         try:
             os.makedirs(os.path.dirname(mod_path), exist_ok=True)
             shutil.copy2(backup_path, mod_path)
-            DEBUG.log(f"Restored WEM from backup: {backup_path} -> {mod_path}")
+            DEBUG.log(f"Restored WEM: {mod_path} (Size: {backup_wem_size})")
         except Exception as e:
-            DEBUG.log(f"Failed to restore WEM file: {e}", "ERROR")
             return False, str(e)
             
         try:
             source_id = int(file_id)
-            bnk_reverted = False
+            bnk_updated_count = 0
             
             bnk_files_info = self.find_relevant_bnk_files()
 
             for bnk_path, bnk_type in bnk_files_info:
+    
                 if bnk_type == 'sfx':
                     rel_path = os.path.relpath(bnk_path, os.path.join(self.base_path, "Wems", "SFX"))
                     mod_bnk_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", rel_path)
@@ -12969,34 +13755,22 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                     mod_bnk_path = os.path.join(self.mod_p_path, "OPP", "Content", "WwiseAudio", "Windows", rel_path)
                 
                 if not os.path.exists(mod_bnk_path):
-                    continue
+                    os.makedirs(os.path.dirname(mod_bnk_path), exist_ok=True)
+                    shutil.copy2(bnk_path, mod_bnk_path)
+                    DEBUG.log(f"Created new mod BNK for restoration: {os.path.basename(mod_bnk_path)}")
 
-                original_bnk = BNKEditor(bnk_path)
-                original_entries = original_bnk.find_sound_by_source_id(source_id)
-                if not original_entries:
-                    continue
-                original_fx_flag = original_entries[0].override_fx
+                if os.path.exists(mod_bnk_path):
+                    mod_editor = BNKEditor(mod_bnk_path)
 
-                mod_bnk_editor = BNKEditor(mod_bnk_path)
-                if mod_bnk_editor.modify_sound(source_id, 
-                                            new_size=backup_wem_size,
-                                            override_fx=original_fx_flag,
-                                            find_by_size=None):
-                    mod_bnk_editor.save_file()
-                    self.invalidate_bnk_cache(source_id)
-                    DEBUG.log(f"BNK {os.path.basename(mod_bnk_path)} reverted to backup size ({backup_wem_size} bytes) for ID {source_id}.")
-                    bnk_reverted = True
-                    break
-            
-            if bnk_reverted:
-                return True, "Restored WEM and BNK from backup successfully"
-            else:
-                return True, "Restored WEM from backup (BNK not found or unchanged)"
+                    if mod_editor.modify_sound(source_id, new_size=backup_wem_size):
+                        mod_editor.save_file()
+                        self.invalidate_bnk_cache(source_id)
+                        bnk_updated_count += 1
+
+            return True, f"Restored WEM and updated {bnk_updated_count} BNK files."
         
         except Exception as e:
-            DEBUG.log(f"Error while reverting BNK: {e}", "ERROR")
-            return False, f"WEM restored, but failed to revert BNK: {str(e)}"
-
+            return False, f"WEM restored but BNK update failed: {str(e)}"
     def has_backup(self, file_id, lang):
         backup_path = self.get_backup_path(file_id, lang)
         exists = os.path.exists(backup_path)
@@ -16206,6 +16980,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
         
         tree = AudioTreeWidget(wem_app=self, lang=lang)
+        tree.setUniformRowHeights(True)
         tree.setAcceptDrops(True)
         tree.setDragDropMode(QtWidgets.QAbstractItemView.DropOnly)
         tree.viewport().setAcceptDrops(True)
@@ -17132,6 +17907,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         <h3>{self.tr("development_team")}</h3>
         <p><b>Developer:</b> Bezna</p>        
         <p>Tester/Polish Translator: Alaneg</p>
+        <p>Tester/Mexican Spanish Translator: Mercedes</p>
         
         <h3>Special Thanks</h3>
         <ul>
@@ -17160,7 +17936,7 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
         license_content.setHtml(f"""
         <div style="padding: 20px;">
         <h3>{self.tr("license_agreement")}</h3>
-        <p>Copyright (c) 2025 OutlastTrials AudioEditor</p>
+        <p>Copyright (c) 2026 OutlastTrials AudioEditor</p>
         
         <p>Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal
@@ -17412,6 +18188,13 @@ class WemSubtitleApp(QtWidgets.QMainWindow):
                 self.save_subtitles_to_file()
         self.save_converter_file_list()        
         self.stop_audio()
+        self.audio_player.stop()
+        if hasattr(self, 'wav_converter'):
+             self.wav_converter.stop_conversion()
+
+        for f in getattr(self, 'temp_files_to_cleanup', []):
+            try: os.remove(f)
+            except: pass
         event.accept()
 class EasterEggLoader(QObject):
     config_loaded = pyqtSignal(dict)    
